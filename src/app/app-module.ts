@@ -12,9 +12,10 @@ import Aura from '@primeuix/themes/aura';
 
 import { SideBar } from './shared/components/side-bar/side-bar';
 import { Layout } from './shared/components/layout/layout';
+import { Header } from './shared/components/layout/header/header';
 
 @NgModule({
-  declarations: [App, SideBar, Layout],
+  declarations: [App, SideBar, Layout, Header],
   imports: [BrowserModule, AppRoutingModule],
   providers: [
     provideBrowserGlobalErrorListeners(),
