@@ -1,0 +1,107 @@
+<div
+  class="overflow-hidden rounded-[14px] border border-[#e6ebf2] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+>
+  <!-- Header -->
+  <div
+    class="flex flex-col gap-3 border-b border-[#edf1f6] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+  >
+    <h3 class="text-[16px] font-semibold text-slate-900">Recent Orders</h3>
+
+    <button
+      type="button"
+      class="self-start text-[13px] font-semibold text-[#2f6bff] transition hover:opacity-80 sm:self-auto"
+    >
+      View all orders
+    </button>
+  </div>
+
+  <!-- Desktop / Tablet Table -->
+  <div class="hidden md:block">
+    <p-table [value]="orders" [tableStyle]="{ 'min-width': '100%' }">
+      <ng-template pTemplate="header">
+        <tr class="bg-[#f8fafc]">
+          <th class="table-head-cell text-left">ORDER ID</th>
+          <th class="table-head-cell text-left">CUSTOMER NAME</th>
+          <th class="table-head-cell text-left">TOTAL PRICE</th>
+          <th class="table-head-cell text-left">STATUS</th>
+          <th class="table-head-cell text-right">DATE</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-order>
+        <tr>
+          <td class="table-body-cell font-semibold text-slate-800">
+            {{ order.orderId }}
+          </td>
+          <td class="table-body-cell text-slate-600">
+            {{ order.customerName }}
+          </td>
+          <td class="table-body-cell font-semibold text-slate-800">
+            {{ order.totalPrice | currency: 'USD' : 'symbol' : '1.2-2' }}
+          </td>
+          <td class="table-body-cell">
+            <span
+              class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none"
+              [ngClass]="getStatusClasses(order.status)"
+            >
+              {{ order.status }}
+            </span>
+          </td>
+          <td class="table-body-cell text-right text-slate-500">
+            {{ order.date }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div class="flex items-center justify-between border-t border-[#edf1f6] px-4 py-4 sm:px-5">
+      <p class="text-[12px] text-slate-500">Showing 5 of 45,210 orders</p>
+
+      <div class="flex items-center gap-3 text-slate-400">
+        <button type="button" class="text-lg leading-none">&lsaquo;</button>
+        <button type="button" class="text-lg leading-none">&rsaquo;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Cards -->
+  <div class="divide-y divide-[#edf1f6] md:hidden">
+    <div *ngFor="let order of orders" class="px-4 py-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <p class="text-[14px] font-semibold text-slate-800">
+            {{ order.orderId }}
+          </p>
+          <p class="mt-1 text-[13px] text-slate-500">
+            {{ order.customerName }}
+          </p>
+        </div>
+
+        <span
+          class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none"
+          [ngClass]="getStatusClasses(order.status)"
+        >
+          {{ order.status }}
+        </span>
+      </div>
+
+      <div class="mt-3 flex items-center justify-between">
+        <p class="text-[14px] font-semibold text-slate-900">
+          {{ order.totalPrice | currency: 'USD' : 'symbol' : '1.2-2' }}
+        </p>
+        <p class="text-[12px] text-slate-500">
+          {{ order.date }}
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between px-4 py-4">
+      <p class="text-[12px] text-slate-500">Showing 5 of 45,210 orders</p>
+
+      <div class="flex items-center gap-3 text-slate-400">
+        <button type="button" class="text-lg leading-none">&lsaquo;</button>
+        <button type="button" class="text-lg leading-none">&rsaquo;</button>
+      </div>
+    </div>
+  </div>
+</div>
