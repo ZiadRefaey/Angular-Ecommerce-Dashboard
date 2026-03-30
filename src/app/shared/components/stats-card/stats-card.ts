@@ -8,8 +8,7 @@ import { Component, Input } from '@angular/core';
 })
 export class StatsCard {
   @Input() iconClass = '';
-  @Input() iconColorClass = '';
-  @Input() iconBgClass = '';
+  @Input() iconWrapperClass = '';
   @Input() title = '';
   @Input() value = '';
 }

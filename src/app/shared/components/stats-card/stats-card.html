@@ -2,8 +2,11 @@
   class="rounded-[14px] border border-[#dde5ef] bg-white px-5 py-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
 >
   <div class="flex items-center gap-4">
-    <div class="flex h-10 w-10 items-center justify-center rounded-full" [ngClass]="iconBgClass">
-      <i class="text-[18px]" [ngClass]="[iconClass, iconColorClass]"></i>
+    <div
+      class="flex h-10 w-10 items-center justify-center rounded-full"
+      [ngClass]="iconWrapperClass"
+    >
+      <i class="text-[18px]" [ngClass]="iconClass"></i>
     </div>
 
     <div>

@@ -7,20 +7,18 @@ import { DataTableColumn } from '../models/data-table.model';
   standalone: false,
 })
 export class DataTable<T = any> {
-  @Input() title = '';
-  @Input() subtitle = '';
   @Input() data: T[] = [];
   @Input() columns: DataTableColumn[] = [];
-  @Input() cardClass = '';
-  @Input() showHeader = true;
   @Input() minWidth = '100%';
+  @Input() showHeader = true;
+  @Input() cardClass = '';
 
   @Input() topLeftTemplate?: TemplateRef<any>;
   @Input() topRightTemplate?: TemplateRef<any>;
   @Input() bodyTemplate?: TemplateRef<any>;
   @Input() footerTemplate?: TemplateRef<any>;
 
-  getHeaderAlignClass(align: string | undefined): string {
+  getHeaderAlignClass(align?: string): string {
     switch (align) {
       case 'center':
         return 'text-center';
@@ -31,7 +29,7 @@ export class DataTable<T = any> {
     }
   }
 
-  getBodyAlignClass(align: string | undefined): string {
+  getBodyAlignClass(align?: string): string {
     switch (align) {
       case 'center':
         return 'text-center';
