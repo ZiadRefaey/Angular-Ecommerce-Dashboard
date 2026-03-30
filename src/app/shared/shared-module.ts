@@ -7,6 +7,6 @@ import { StatusBadge } from './components/status-badge/status-badge';
 @NgModule({
   declarations: [DataTable, StatsCard, StatusBadge],
   imports: [CommonModule, TableModule],
-  exports: [DataTable, StatsCard],
+  exports: [DataTable, StatsCard, StatusBadge],
 })
 export class SharedModule {}
