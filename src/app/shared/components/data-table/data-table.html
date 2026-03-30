@@ -1,0 +1,56 @@
+<div
+  class="overflow-hidden rounded-[14px] border border-[#dde5ef] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+  [ngClass]="cardClass"
+>
+  <div
+    *ngIf="showHeader"
+    class="flex flex-col gap-3 border-b border-[#edf2f7] px-4 py-3 md:flex-row md:items-center md:justify-between md:px-5"
+  >
+    <div class="flex items-center gap-3">
+      <ng-container *ngIf="topLeftTemplate" [ngTemplateOutlet]="topLeftTemplate"></ng-container>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <ng-container *ngIf="topRightTemplate" [ngTemplateOutlet]="topRightTemplate"></ng-container>
+    </div>
+  </div>
+
+  <div class="hidden md:block">
+    <p-table [value]="data" [tableStyle]="{ 'min-width': minWidth }">
+      <ng-template pTemplate="header">
+        <tr class="bg-white">
+          <th
+            *ngFor="let column of columns"
+            class="table-head-cell"
+            [ngClass]="getHeaderAlignClass(column.headerAlign)"
+            [style.width]="column.width"
+          >
+            {{ column.header }}
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+        <ng-container
+          *ngIf="bodyTemplate"
+          [ngTemplateOutlet]="bodyTemplate"
+          [ngTemplateOutletContext]="{ $implicit: rowData, rowIndex: rowIndex }"
+        ></ng-container>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="divide-y divide-[#edf2f7] md:hidden">
+    <ng-container *ngFor="let row of data; let i = index">
+      <ng-container
+        *ngIf="bodyTemplate"
+        [ngTemplateOutlet]="bodyTemplate"
+        [ngTemplateOutletContext]="{ $implicit: row, rowIndex: i, mobile: true }"
+      ></ng-container>
+    </ng-container>
+  </div>
+
+  <div *ngIf="footerTemplate" class="border-t border-[#edf2f7] px-4 py-3 md:px-5">
+    <ng-container [ngTemplateOutlet]="footerTemplate"></ng-container>
+  </div>
+</div>

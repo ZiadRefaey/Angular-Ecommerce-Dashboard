@@ -1,10 +1,10 @@
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
   <article
     *ngFor="let stat of stats"
-    class="rounded-[12px] border border-[#e6ebf2] bg-white px-4 py-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+    class="rounded-xl border border-[#e6ebf2] bg-white px-4 py-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
   >
     <div
-      class="mb-4 flex h-8 w-8 items-center justify-center rounded-[8px]"
+      class="mb-4 flex h-8 w-8 items-center justify-center rounded--lg"
       [ngClass]="getIconBgClass(stat.icon)"
     >
       <ng-container [ngSwitch]="stat.icon">
