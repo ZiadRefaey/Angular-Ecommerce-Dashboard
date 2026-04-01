@@ -1,0 +1,157 @@
+<section class="min-h-screen bg-[#f4f7fb] px-4 py-5 sm:px-5 lg:px-6">
+  <div class="mx-auto w-full max-w-7xl">
+    <!-- Header -->
+    <div>
+      <h1 class="text-[22px] font-bold text-[#101828]">Categories</h1>
+      <p class="mt-1 text-[14px] text-[#667085]">
+        Organize and manage product categories in your store
+      </p>
+    </div>
+
+    <!-- Stats -->
+    <div class="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <app-stats-card
+        *ngFor="let card of statsCards"
+        [iconClass]="card.iconClass"
+        [iconWrapperClass]="card.iconWrapperClass"
+        [title]="card.title"
+        [value]="card.value"
+      ></app-stats-card>
+    </div>
+
+    <!-- Table -->
+    <div class="mt-7">
+      <app-data-table
+        [data]="categories"
+        [columns]="columns"
+        [minWidth]="'100%'"
+        [topLeftTemplate]="topLeft"
+        [topRightTemplate]="topRight"
+        [bodyTemplate]="body"
+        [footerTemplate]="footer"
+      ></app-data-table>
+
+      <!-- Filters -->
+      <ng-template #topLeft>
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Search -->
+          <div class="relative">
+            <i
+              class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-[#98a2b3]"
+            ></i>
+            <input
+              type="text"
+              placeholder="Search categories..."
+              class="h-9 rounded-lg border border-[#d8e0ea] bg-white pl-9 pr-3 text-[14px] outline-none"
+            />
+          </div>
+
+          <!-- Filters -->
+          <button
+            class="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d8e0ea] bg-white px-4 text-[14px]"
+          >
+            All Categories
+            <i class="pi pi-angle-down text-[12px] text-[#667085]"></i>
+          </button>
+
+          <button
+            class="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d8e0ea] bg-white px-4 text-[14px]"
+          >
+            All Status
+            <i class="pi pi-angle-down text-[12px] text-[#667085]"></i>
+          </button>
+        </div>
+      </ng-template>
+
+      <ng-template #topRight>
+        <p class="text-[14px] text-[#667085]">Showing 1-6 of 12 categories</p>
+      </ng-template>
+
+      <!-- Table Body -->
+      <ng-template #body let-category let-mobile="mobile">
+        <ng-container *ngIf="mobile; else desktopRow">
+          <div class="px-4 py-4">
+            <div class="flex justify-between">
+              <p class="font-semibold text-[#101828]">
+                {{ category.name }}
+              </p>
+
+              <app-status-badge
+                [label]="category.status"
+                [variant]="getStatusVariant(category.status)"
+              ></app-status-badge>
+            </div>
+
+            <div class="mt-2 text-[13px] text-[#667085]">
+              <strong>{{ category.productsCount }}</strong> Products
+            </div>
+
+            <div class="mt-3 flex justify-between items-center">
+              <span class="text-[12px] text-[#98a2b3]">
+                {{ category.createdAt }}
+              </span>
+
+              <div class="flex gap-3">
+                <i class="pi pi-eye text-[#667085]"></i>
+                <i class="pi pi-ellipsis-h text-[#667085]"></i>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #desktopRow>
+          <tr>
+            <!-- Name -->
+            <td class="table-body-cell font-semibold text-[#101828]">
+              {{ category.name }}
+            </td>
+
+            <!-- Products -->
+            <td class="table-body-cell">
+              <span class="font-semibold text-[#101828]">
+                {{ category.productsCount }}
+              </span>
+              <span class="text-[#667085]"> Products</span>
+            </td>
+
+            <!-- Status -->
+            <td class="table-body-cell">
+              <app-status-badge
+                [label]="category.status"
+                [variant]="getStatusVariant(category.status)"
+              ></app-status-badge>
+            </td>
+
+            <!-- Date -->
+            <td class="table-body-cell text-[#667085]">
+              {{ category.createdAt }}
+            </td>
+
+            <!-- Actions -->
+            <td class="table-body-cell">
+              <div class="flex justify-end gap-4">
+                <i class="pi pi-eye text-[#667085]"></i>
+                <i class="pi pi-ellipsis-h text-[#667085]"></i>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </ng-template>
+
+      <!-- Footer -->
+      <ng-template #footer>
+        <div class="flex justify-between items-center">
+          <span class="text-[14px] text-[#667085]">Previous</span>
+
+          <div class="flex gap-2">
+            <button class="bg-blue-500 text-white px-2 py-1 rounded">1</button>
+            <button class="px-2">2</button>
+            <button class="px-2">3</button>
+          </div>
+
+          <span class="text-[14px] text-[#667085]">Next</span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</section>

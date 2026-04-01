@@ -1,0 +1,33 @@
+@if (isOpen) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4 py-6"
+    (click)="onBackdropClick()"
+  >
+    <div
+      class="w-full {{
+        widthClass
+      }} animate-modal-in overflow-hidden rounded-xl border border-[#e4e7ec] bg-white shadow-[0_20px_40px_rgba(16,24,40,0.18)]"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-[#eaecf0] px-6 py-5">
+        <h2 class="text-[18px] font-bold text-[#101828]">
+          {{ title }}
+        </h2>
+
+        <button
+          type="button"
+          class="text-[#98a2b3] transition hover:text-[#667085]"
+          (click)="onClose()"
+        >
+          <i class="pi pi-times text-[16px]"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="px-6 py-5">
+        <ng-content></ng-content>
+      </div>
+    </div>
+  </div>
+}
