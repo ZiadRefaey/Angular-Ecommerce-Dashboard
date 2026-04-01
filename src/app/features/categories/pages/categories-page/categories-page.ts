@@ -94,7 +94,15 @@ export class CategoriesPage {
       createdAt: '2026-03-05',
     },
   ];
+  isCreateCategoryModalOpen = false;
 
+  openCreateCategoryModal(): void {
+    this.isCreateCategoryModalOpen = true;
+  }
+
+  closeCreateCategoryModal(): void {
+    this.isCreateCategoryModalOpen = false;
+  }
   getStatusVariant(status: CategoryStatus): 'success' | 'warning' {
     return status === 'ACTIVE' ? 'success' : 'warning';
   }

@@ -24,6 +24,11 @@ const routes: Routes = [
     path: 'auth',
     loadChildren: () => import('./features/auth/auth-module').then((m) => m.AuthModule),
   },
+  {
+    path: 'categories',
+    loadChildren: () =>
+      import('./features/categories/categories-module').then((m) => m.CategoriesModule),
+  },
 
   {
     path: '**',

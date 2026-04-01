@@ -8,6 +8,6 @@ import { Modal } from './components/modal/modal';
 @NgModule({
   declarations: [DataTable, StatsCard, StatusBadge, Modal],
   imports: [CommonModule, TableModule],
-  exports: [DataTable, StatsCard, StatusBadge],
+  exports: [DataTable, StatsCard, StatusBadge, Modal],
 })
 export class SharedModule {}

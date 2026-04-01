@@ -9,7 +9,6 @@
       }} animate-modal-in overflow-hidden rounded-xl border border-[#e4e7ec] bg-white shadow-[0_20px_40px_rgba(16,24,40,0.18)]"
       (click)="$event.stopPropagation()"
     >
-      <!-- Header -->
       <div class="flex items-center justify-between border-b border-[#eaecf0] px-6 py-5">
         <h2 class="text-[18px] font-bold text-[#101828]">
           {{ title }}
@@ -24,7 +23,6 @@
         </button>
       </div>
 
-      <!-- Body -->
       <div class="px-6 py-5">
         <ng-content></ng-content>
       </div>
