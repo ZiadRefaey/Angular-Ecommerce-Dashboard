@@ -1,14 +1,27 @@
-@if (isOpen) {
+@if (isVisible) {
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4 py-6"
+    class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
+    [ngClass]="{
+      'animate-backdrop-in': isOpen,
+      'animate-backdrop-out': !isOpen,
+    }"
     (click)="onBackdropClick()"
   >
+    <!-- backdrop -->
+    <div class="absolute inset-0 bg-black/30"></div>
+
+    <!-- modal -->
     <div
-      class="w-full {{
+      class="relative w-full {{
         widthClass
-      }} animate-modal-in overflow-hidden rounded-xl border border-[#e4e7ec] bg-white shadow-[0_20px_40px_rgba(16,24,40,0.18)]"
+      }} overflow-hidden rounded-[12px] border border-[#e4e7ec] bg-white shadow-[0_20px_40px_rgba(16,24,40,0.18)]"
+      [ngClass]="{
+        'animate-modal-in': isOpen,
+        'animate-modal-out': !isOpen,
+      }"
       (click)="$event.stopPropagation()"
     >
+      <!-- Header -->
       <div class="flex items-center justify-between border-b border-[#eaecf0] px-6 py-5">
         <h2 class="text-[18px] font-bold text-[#101828]">
           {{ title }}
@@ -23,6 +36,7 @@
         </button>
       </div>
 
+      <!-- Body -->
       <div class="px-6 py-5">
         <ng-content></ng-content>
       </div>

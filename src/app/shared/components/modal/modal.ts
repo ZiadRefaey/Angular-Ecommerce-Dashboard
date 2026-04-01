@@ -14,6 +14,19 @@ export class Modal {
 
   @Output() closed = new EventEmitter<void>();
 
+  isVisible = false;
+
+  ngOnChanges(): void {
+    if (this.isOpen) {
+      this.isVisible = true;
+    } else {
+      // wait for animation before removing
+      setTimeout(() => {
+        this.isVisible = false;
+      }, 180);
+    }
+  }
+
   onBackdropClick(): void {
     if (this.closeOnBackdrop) {
       this.closed.emit();

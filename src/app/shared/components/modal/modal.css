@@ -2,10 +2,40 @@
   display: contents;
 }
 
+/* ===== BACKDROP ===== */
+
+@keyframes backdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdropOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-backdrop-in {
+  animation: backdropIn 180ms ease-out forwards;
+}
+
+.animate-backdrop-out {
+  animation: backdropOut 180ms ease-in forwards;
+}
+
+/* ===== MODAL ===== */
+
 @keyframes modalIn {
   0% {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(12px) scale(0.96);
   }
   100% {
     opacity: 1;
@@ -13,6 +43,21 @@
   }
 }
 
+@keyframes modalOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+}
+
 .animate-modal-in {
-  animation: modalIn 180ms ease-out;
+  animation: modalIn 180ms ease-out forwards;
+}
+
+.animate-modal-out {
+  animation: modalOut 160ms ease-in forwards;
 }
