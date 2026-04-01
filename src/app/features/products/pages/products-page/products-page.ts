@@ -130,7 +130,15 @@ export class ProductsPage {
         return 'bg-slate-400';
     }
   }
+  isCreateProductModalOpen = false;
 
+  openCreateProductModal(): void {
+    this.isCreateProductModalOpen = true;
+  }
+
+  closeCreateProductModal(): void {
+    this.isCreateProductModalOpen = false;
+  }
   getStockTextClass(status: Product['stockStatus']): string {
     switch (status) {
       case 'IN_STOCK':
