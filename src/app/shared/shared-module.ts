@@ -5,9 +5,10 @@ import { StatsCard } from './components/stats-card/stats-card';
 import { TableModule } from 'primeng/table';
 import { StatusBadge } from './components/status-badge/status-badge';
 import { Modal } from './components/modal/modal';
+import { Button } from './components/button/button';
 @NgModule({
-  declarations: [DataTable, StatsCard, StatusBadge, Modal],
+  declarations: [DataTable, StatsCard, StatusBadge, Modal, Button],
   imports: [CommonModule, TableModule],
-  exports: [DataTable, StatsCard, StatusBadge, Modal],
+  exports: [DataTable, StatsCard, StatusBadge, Modal, Button],
 })
 export class SharedModule {}

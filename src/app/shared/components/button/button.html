@@ -1,0 +1,22 @@
+<button
+  [type]="type"
+  [disabled]="disabled"
+  class="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+  [class.bg-blue-600]="variant === 'primary'"
+  [class.text-white]="variant === 'primary'"
+  [class.border-blue-600]="variant === 'primary'"
+  [class.hover:bg-blue-700]="variant === 'primary' && !disabled"
+  [class.bg-white]="variant === 'outline' || variant === 'danger'"
+  [class.text-slate-700]="variant === 'outline'"
+  [class.border-slate-200]="variant === 'outline'"
+  [class.hover:bg-slate-50]="variant === 'outline' && !disabled"
+  [class.text-red-600]="variant === 'danger'"
+  [class.border-red-200]="variant === 'danger'"
+  [class.hover:bg-red-50]="variant === 'danger' && !disabled"
+>
+  @if (icon) {
+    <i [class]="icon"></i>
+  }
+
+  <span>{{ label }}</span>
+</button>

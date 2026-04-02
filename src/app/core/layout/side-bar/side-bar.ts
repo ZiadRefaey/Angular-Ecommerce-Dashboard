@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-side-bar',
@@ -10,4 +12,12 @@ import { Component } from '@angular/core';
       'w-64 bg-gray-900 h-screen text-white row-span-2 flex items-start justify-start flex-col',
   },
 })
-export class SideBar {}
+export class SideBar {
+  private router = inject(Router);
+  currentPath = '';
+  ngOnInit() {
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      this.currentPath = this.router.url;
+    });
+  }
+}
