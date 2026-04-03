@@ -1,0 +1,55 @@
+<div class="space-y-6 p-6 bg-white">
+  <div
+    class="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between"
+  >
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold text-slate-900">Order {{ order.id }}</h1>
+
+        <app-status-badge [variant]="order.status"></app-status-badge>
+      </div>
+
+      <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500">
+        <p>Placed on {{ order.date }}</p>
+        <p>Payment: {{ order.paymentStatus }}</p>
+        <p>Method: {{ order.paymentMethod }}</p>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      <app-button label="Email Invoice" variant="outline" icon="pi pi-envelope"></app-button>
+
+      <app-button label="Print Invoice" variant="outline" icon="pi pi-print"></app-button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 xl:grid-cols-12">
+    <div class="space-y-6 xl:col-span-8">
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <app-order-details-customer-card [customer]="customer"></app-order-details-customer-card>
+
+        <app-order-details-shipping-card [address]="address"></app-order-details-shipping-card>
+      </div>
+
+      <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-slate-900">Order Items</h2>
+          <p class="text-sm text-slate-500">Scroll after 5 items</p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-100">
+          <div class="max-h-105 overflow-y-auto">
+            <p class="p-6 text-sm text-slate-500">Shared table goes here</p>
+          </div>
+        </div>
+      </section>
+
+      <app-order-details-workflow [status]="order.status"></app-order-details-workflow>
+    </div>
+
+    <div class="space-y-6 xl:col-span-4">
+      <app-order-details-summary-card [summary]="summary"></app-order-details-summary-card>
+      <app-order-details-notes [notes]="notes"></app-order-details-notes>
+    </div>
+  </div>
+</div>

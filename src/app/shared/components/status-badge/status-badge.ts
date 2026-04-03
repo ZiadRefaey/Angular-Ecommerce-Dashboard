@@ -1,5 +1,12 @@
 import { Component, Input } from '@angular/core';
-export type StatusBadgeVariant = 'success' | 'primary' | 'warning' | 'info' | 'danger' | 'neutral';
+export type StatusBadgeVariant =
+  | 'success'
+  | 'primary'
+  | 'warning'
+  | 'info'
+  | 'danger'
+  | 'neutral'
+  | 'pending';
 
 @Component({
   selector: 'app-status-badge',
@@ -19,6 +26,8 @@ export class StatusBadge {
         return 'bg-[#eef4ff] text-[#175cd3]';
       case 'warning':
         return 'bg-[#fffaeb] text-[#b54708]';
+      case 'pending':
+        return 'bg-[#FEF3C7] text-[#B45309]';
       case 'info':
         return 'bg-[#ecfdff] text-[#0e7090]';
       case 'danger':

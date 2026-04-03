@@ -1,0 +1,32 @@
+<section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  <h2 class="mb-4 text-lg font-semibold text-slate-900">Shipping Address</h2>
+
+  <div class="space-y-4 text-sm">
+    <div>
+      <p class="mb-1 text-xs font-medium uppercase tracking-wide text-slate-400">Street</p>
+      <p class="text-slate-900">{{ address.street }}</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-slate-400">City</p>
+        <p class="text-slate-600">{{ address.city }}</p>
+      </div>
+
+      <div>
+        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-slate-400">State</p>
+        <p class="text-slate-600">{{ address.state }}</p>
+      </div>
+
+      <div>
+        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-slate-400">Postal Code</p>
+        <p class="text-slate-600">{{ address.postalCode }}</p>
+      </div>
+
+      <div>
+        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-slate-400">Country</p>
+        <p class="text-slate-600">{{ address.country }}</p>
+      </div>
+    </div>
+  </div>
+</section>

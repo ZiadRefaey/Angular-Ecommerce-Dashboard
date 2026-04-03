@@ -1,0 +1,29 @@
+<section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  <h2 class="mb-4 text-lg font-semibold text-slate-900">Order Actions</h2>
+
+  <div class="flex flex-wrap gap-3">
+    <app-button
+      label="Confirm"
+      [variant]="status === 'Pending' ? 'primary' : 'outline'"
+    ></app-button>
+
+    <app-button
+      label="Process"
+      [variant]="status === 'Confirmed' ? 'primary' : 'outline'"
+    ></app-button>
+
+    <app-button
+      label="Ship Order"
+      icon="pi pi-truck"
+      [variant]="status === 'Processing' ? 'primary' : 'outline'"
+    ></app-button>
+
+    <app-button
+      label="Deliver"
+      icon="pi pi-check-circle"
+      [variant]="status === 'Shipped' ? 'primary' : 'outline'"
+    ></app-button>
+
+    <app-button label="Cancel Order" icon="pi pi-times" variant="danger"></app-button>
+  </div>
+</section>

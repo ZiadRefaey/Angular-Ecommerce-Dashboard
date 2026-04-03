@@ -1,3 +1,5 @@
+import { StatusBadgeVariant } from '../../../shared/components/status-badge/status-badge';
+
 export type OrderStatus = 'Delivered' | 'Confirmed' | 'Pending' | 'Shipped' | 'Cancelled';
 
 export type PaymentStatus = 'Paid' | 'Unpaid';
@@ -18,4 +20,11 @@ export interface OrderStatsCard {
   iconWrapperClass: string;
   title: string;
   value: string;
+}
+export interface IOrderDetails {
+  id: string;
+  status: StatusBadgeVariant;
+  date: string;
+  paymentStatus: string;
+  paymentMethod: string;
 }
