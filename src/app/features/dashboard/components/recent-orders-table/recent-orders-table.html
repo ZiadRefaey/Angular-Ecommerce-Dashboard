@@ -7,19 +7,19 @@
   >
     <h3 class="text-[16px] font-semibold text-slate-900">Recent Orders</h3>
 
-    <button
+    <a
+      routerLink="/orders"
       type="button"
       class="self-start text-[13px] font-semibold text-[#2f6bff] transition hover:opacity-80 sm:self-auto"
     >
       View all orders
-    </button>
+    </a>
   </div>
 
-  <!-- Desktop / Tablet Table -->
   <div class="hidden md:block">
     <p-table [value]="orders" [tableStyle]="{ 'min-width': '100%' }">
       <ng-template pTemplate="header">
-        <tr class="bg-[#f8fafc]">
+        <tr>
           <th class="table-head-cell text-left">ORDER ID</th>
           <th class="table-head-cell text-left">CUSTOMER NAME</th>
           <th class="table-head-cell text-left">TOTAL PRICE</th>
