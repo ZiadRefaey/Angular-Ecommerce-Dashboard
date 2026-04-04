@@ -22,3 +22,6 @@
   width: 100%;
   border-collapse: collapse;
 }
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  color: #000 !important;
+}
