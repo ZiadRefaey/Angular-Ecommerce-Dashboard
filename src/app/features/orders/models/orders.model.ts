@@ -28,3 +28,11 @@ export interface IOrderDetails {
   paymentStatus: string;
   paymentMethod: string;
 }
+export interface IOrderItem {
+  id: number;
+  name: string;
+  variant: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}

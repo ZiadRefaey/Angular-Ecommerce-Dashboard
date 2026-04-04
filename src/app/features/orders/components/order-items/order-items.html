@@ -1,0 +1,97 @@
+<app-data-table
+  [data]="items"
+  [columns]="columns"
+  [minWidth]="'100%'"
+  [showHeader]="false"
+  [bodyTemplate]="orderItemsBody"
+  [cardClass]="'rounded-[16px]'"
+></app-data-table>
+
+<ng-template #orderItemsBody let-item let-mobile="mobile">
+  <ng-container *ngIf="mobile; else desktopRow">
+    <div class="px-4 py-4">
+      <div class="flex items-start gap-3">
+        <div
+          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-[14px] border border-slate-600"
+        >
+          <p class="text-black">PH</p>
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <h3 class="text-[16px] font-semibold text-[#101828]">
+            {{ item.name }}
+          </h3>
+          <p class="mt-1 text-[14px] text-[#8da0be]">
+            {{ item.variant }}
+          </p>
+
+          <div class="mt-4 grid grid-cols-3 gap-3">
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8da0be]">
+                Quantity
+              </p>
+              <p class="mt-1 text-[16px] font-semibold text-[#344054]">
+                {{ item.quantity < 10 ? '0' + item.quantity : item.quantity }}
+              </p>
+            </div>
+
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8da0be]">
+                Unit Price
+              </p>
+              <p class="mt-1 text-[16px] font-medium text-[#475467]">
+                {{ item.unitPrice | number }} EGP
+              </p>
+            </div>
+
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8da0be]">
+                Total
+              </p>
+              <p class="mt-1 text-[16px] font-bold text-[#101828]">{{ item.total | number }} EGP</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #desktopRow>
+    <tr>
+      <td class="table-body-cell">
+        <div class="flex items-center gap-5">
+          <div
+            class="flex h-16 w-16 shrink-0 items-center justify-center rounded-[14px] border border-slate-600"
+          >
+            <p class="text-black">PH</p>
+          </div>
+
+          <div>
+            <h3 class="text-[18px] font-semibold text-[#1d2939]">
+              {{ item.name }}
+            </h3>
+            <p class="mt-1 text-[14px] font-medium text-[#8da0be]">
+              {{ item.variant }}
+            </p>
+          </div>
+        </div>
+      </td>
+
+      <td class="table-body-cell text-center">
+        <span class="text-[14px] text-center font-semibold text-[#344054]">
+          {{ item.quantity < 10 ? '0' + item.quantity : item.quantity }}
+        </span>
+      </td>
+
+      <td class="table-body-cell text-center">
+        <span class="text-[14px] font-medium text-[#475467]">
+          {{ item.unitPrice | number }} EGP
+        </span>
+      </td>
+
+      <td class="table-body-cell text-right">
+        <span class="text-[14px] font-bold text-[#101828]"> {{ item.total | number }} EGP </span>
+      </td>
+    </tr>
+  </ng-template>
+</ng-template>

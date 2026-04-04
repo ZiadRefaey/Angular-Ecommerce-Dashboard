@@ -10,6 +10,7 @@ import { OrderDetailsShippingCard } from './components/order-details-shipping-ca
 import { OrderDetailsSummaryCard } from './components/order-details-summary-card/order-details-summary-card';
 import { OrderDetailsNotes } from './components/order-details-notes/order-details-notes';
 import { OrderDetailsWorkflow } from './components/order-details-workflow/order-details-workflow';
+import { OrderItems } from './components/order-items/order-items';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { OrderDetailsWorkflow } from './components/order-details-workflow/order-
     OrderDetailsSummaryCard,
     OrderDetailsNotes,
     OrderDetailsWorkflow,
+    OrderItems,
   ],
   imports: [CommonModule, OrdersRoutingModule, SharedModule],
 })

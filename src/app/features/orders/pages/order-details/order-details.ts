@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { IOrderDetails } from '../../models/orders.model';
+import { IOrderDetails, IOrderItem } from '../../models/orders.model';
 
 @Component({
   selector: 'app-order-details',
@@ -9,6 +9,24 @@ import { IOrderDetails } from '../../models/orders.model';
   styleUrl: './order-details.css',
 })
 export class OrderDetails {
+  orderItems: IOrderItem[] = [
+    {
+      id: 1,
+      name: 'iPhone 15 Pro',
+      variant: 'Natural Titanium, 256GB',
+      quantity: 2,
+      unitPrice: 55000,
+      total: 110000,
+    },
+    {
+      id: 2,
+      name: 'Apple Watch Ultra',
+      variant: '49mm Titanium Case',
+      quantity: 1,
+      unitPrice: 14500,
+      total: 14500,
+    },
+  ];
   order: IOrderDetails = {
     id: '#ORD-2026-001',
     status: 'pending',

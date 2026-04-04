@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep app-data-table .table-head-cell {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+:host ::ng-deep app-data-table .table-body-cell {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
