@@ -14,10 +14,15 @@ import { filter } from 'rxjs';
 })
 export class SideBar {
   private router = inject(Router);
-  currentPath = '';
+  currentUrl = '';
   ngOnInit() {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      this.currentPath = this.router.url;
-    });
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.currentUrl = event.urlAfterRedirects;
+      });
+  }
+  logPath() {
+    console.log(this.currentUrl);
   }
 }
