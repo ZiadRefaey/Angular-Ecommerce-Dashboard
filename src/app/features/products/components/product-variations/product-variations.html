@@ -1,0 +1,34 @@
+<div
+  class="rounded-[18px] border border-[#dde5ef] bg-white p-6 shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+>
+  <div class="mb-6 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#eef4ff] text-[#2f6bff]">
+        <i class="pi pi-palette text-[14px]"></i>
+      </div>
+      <h2 class="text-[16px] font-semibold text-[#101828]">Color Variations</h2>
+    </div>
+
+    <button
+      type="button"
+      class="inline-flex items-center gap-2 text-[13px] font-semibold text-[#2f6bff]"
+      (click)="addVariation.emit()"
+    >
+      <i class="pi pi-plus-circle text-[13px]"></i>
+      <span>Add Variation</span>
+    </button>
+  </div>
+
+  <div class="space-y-4">
+    @for (variation of variations; track variation.id) {
+      <app-product-variation-card
+        [variation]="variation"
+        [isActiveMediaTarget]="variation.id === activeVariationId"
+        (editMedia)="variationMediaEdit.emit($event)"
+        (setDefault)="variationDefault.emit($event)"
+        (deleteVariation)="variationDelete.emit($event)"
+        (variationChange)="onVariationChange($event)"
+      ></app-product-variation-card>
+    }
+  </div>
+</div>

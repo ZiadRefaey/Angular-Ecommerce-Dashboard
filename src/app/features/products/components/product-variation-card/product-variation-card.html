@@ -1,0 +1,109 @@
+<div
+  class="relative rounded-2xl border p-5 transition"
+  [ngClass]="variation.isDefault ? 'border-[#2f6bff] bg-[#f5f8ff]' : 'border-[#e6ebf2] bg-white'"
+>
+  @if (variation.isDefault) {
+    <span
+      class="absolute right-4 top-2.5 rounded-md bg-[#2f6bff] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white"
+    >
+      Default
+    </span>
+  }
+
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-[92px_minmax(0,1fr)]">
+    <div class="space-y-3">
+      <div class="h-23 w-23 overflow-hidden rounded-[10px] bg-[#101828]">
+        <img [src]="variation.image" [alt]="variation.name" class="h-full w-full object-cover" />
+      </div>
+
+      <button
+        type="button"
+        class="inline-flex h-8.5 items-center gap-2 rounded-lg border border-[#d0d5dd] bg-white px-3 text-[12px] font-medium text-[#475467]"
+        (click)="editMedia.emit(variation.id)"
+      >
+        <i class="pi pi-image text-[12px]"></i>
+        <span>Edit Image</span>
+      </button>
+    </div>
+
+    <div class="min-w-0">
+      <div class="mb-3 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <span
+            class="h-3 w-3 rounded-full"
+            [ngClass]="
+              variation.name.toLowerCase().includes('black') ? 'bg-[#111827]' : 'bg-[#cbd5e1]'
+            "
+          ></span>
+          <h3 class="text-[15px] font-semibold text-[#101828]">
+            {{ variation.name }}
+          </h3>
+        </div>
+
+        <div class="flex items-center gap-3">
+          @if (!variation.isDefault) {
+            <button
+              type="button"
+              class="text-[12px] font-semibold text-[#2f6bff]"
+              (click)="setDefault.emit(variation.id)"
+            >
+              Set as Default
+            </button>
+          }
+
+          <button
+            type="button"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[#98a2b3] transition hover:bg-[#f9fafb] hover:text-[#f04438]"
+            (click)="deleteVariation.emit(variation.id)"
+          >
+            <i class="pi pi-trash text-[13px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div>
+          <label
+            class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]"
+          >
+            SKU
+          </label>
+          <input
+            type="text"
+            [value]="variation.sku"
+            (input)="onSkuChange($any($event.target).value)"
+            class="h-10 w-full rounded-lg border border-[#e4e7ec] bg-white px-3 text-[13px] text-[#344054] outline-none"
+          />
+        </div>
+
+        <div>
+          <label
+            class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]"
+          >
+            Price Adj.
+          </label>
+          <input
+            type="number"
+            [value]="variation.priceAdjustment"
+            (input)="onPriceAdjChange($any($event.target).value)"
+            class="h-10 w-full rounded-lg border border-[#e4e7ec] bg-white px-3 text-[13px] text-[#344054] outline-none"
+          />
+        </div>
+
+        <div>
+          <label
+            class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]"
+          >
+            Stock
+          </label>
+          <input
+            type="number"
+            [value]="variation.stock"
+            (input)="onStockChange($any($event.target).value)"
+            class="h-10 w-full rounded-lg border border-[#e4e7ec] bg-white px-3 text-[13px] text-[#344054] outline-none"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

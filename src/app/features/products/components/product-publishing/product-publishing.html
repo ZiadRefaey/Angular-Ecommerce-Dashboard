@@ -1,0 +1,47 @@
+<div
+  class="rounded-[18px] border border-[#dde5ef] bg-white p-6 shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+>
+  <div class="mb-6 flex items-center gap-3">
+    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#eef4ff] text-[#2f6bff]">
+      <i class="pi pi-eye text-[14px]"></i>
+    </div>
+    <h2 class="text-[16px] font-semibold text-[#101828]">Publishing</h2>
+  </div>
+
+  <form [formGroup]="form" class="space-y-5">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[14px] font-medium text-[#101828]">Visibility</p>
+        <p class="mt-1 text-[12px] text-[#667085]">Visible on storefront</p>
+      </div>
+
+      <p-toggleswitch formControlName="visibility"></p-toggleswitch>
+    </div>
+
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[14px] font-medium text-[#101828]">Featured</p>
+        <p class="mt-1 text-[12px] text-[#667085]">Show in hero section</p>
+      </div>
+
+      <p-toggleswitch formControlName="featured"></p-toggleswitch>
+    </div>
+
+    <div class="border-t border-[#edf2f7] pt-5">
+      <label class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]">
+        Published Date
+      </label>
+
+      <div class="relative">
+        <i
+          class="pi pi-calendar absolute left-4 top-1/2 -translate-y-1/2 text-[12px] text-[#98a2b3]"
+        ></i>
+        <input
+          type="text"
+          formControlName="publishedDate"
+          class="h-11.5 w-full rounded-[10px] border border-[#eaecf0] bg-[#f8fafc] pl-10 pr-4 text-[14px] text-[#344054] outline-none"
+        />
+      </div>
+    </div>
+  </form>
+</div>
