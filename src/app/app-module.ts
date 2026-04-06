@@ -17,9 +17,17 @@ import { RouterModule } from '@angular/router';
 import { Layout } from './core/layout/layout';
 import { SideBar } from './core/layout/side-bar/side-bar';
 import { Header } from './core/layout/header/header';
+import { CoreModule } from './core/core-module';
 @NgModule({
   declarations: [App, Layout, SideBar, Header],
-  imports: [BrowserModule, RouterModule, AppRoutingModule, BrowserAnimationsModule, TableModule],
+  imports: [
+    BrowserModule,
+    RouterModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    CoreModule,
+    TableModule,
+  ],
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
