@@ -1,5 +1,9 @@
-<app-side-bar></app-side-bar>
-<app-header></app-header>
-<main>
+@if (currentUrl.includes('login')) {
   <router-outlet></router-outlet>
-</main>
+} @else {
+  <app-side-bar></app-side-bar>
+  <app-header></app-header>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+}

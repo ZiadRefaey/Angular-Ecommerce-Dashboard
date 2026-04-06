@@ -21,7 +21,7 @@ const routes: Routes = [
     loadChildren: () => import('./features/orders/orders-module').then((m) => m.OrdersModule),
   },
   {
-    path: 'auth',
+    path: 'login',
     loadChildren: () => import('./features/auth/auth-module').then((m) => m.AuthModule),
   },
   {
@@ -30,10 +30,10 @@ const routes: Routes = [
       import('./features/categories/categories-module').then((m) => m.CategoriesModule),
   },
 
-  {
-    path: '**',
-    redirectTo: 'dashboard',
-  },
+  // {
+  //   path: '**',
+  //   redirectTo: 'dashboard',
+  // },
 ];
 
 @NgModule({

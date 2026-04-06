@@ -1,0 +1,102 @@
+<div class="w-full max-w-95">
+  <div class="mb-6 flex items-center gap-2 text-[16px] font-semibold text-[#2f6bff] lg:hidden">
+    <i class="pi pi-th-large text-[18px]"></i>
+    Curator
+  </div>
+
+  <h2 class="text-[24px] font-semibold text-[#101828]">Welcome Back</h2>
+
+  <p class="mt-2 text-[14px] text-[#667085]">Please enter your details to manage your dashboard</p>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-6 space-y-5">
+    <div>
+      <label class="mb-2 block text-[12px] font-medium text-[#344054]"> Email Address </label>
+
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="curator@example.com"
+        class="h-11.5 w-full rounded-[10px] border px-4 text-[14px] outline-none transition"
+        [ngClass]="
+          isFieldInvalid(emailControl)
+            ? 'border-[#f04438] bg-[#fff5f5] text-[#101828]'
+            : 'border-[#eaecf0] bg-[#f2f4f7] text-[#101828] focus:border-[#2f6bff] focus:bg-white'
+        "
+      />
+
+      @if (emailControl.touched && emailControl.errors?.['required']) {
+        <p class="mt-2 text-[12px] text-[#f04438]">Email is required.</p>
+      }
+
+      @if (emailControl.touched && emailControl.errors?.['email']) {
+        <p class="mt-2 text-[12px] text-[#f04438]">Please enter a valid email address.</p>
+      }
+    </div>
+
+    <div>
+      <div class="mb-2 flex items-center justify-between">
+        <label class="text-[12px] font-medium text-[#344054]"> Password </label>
+
+        <button type="button" class="text-[12px] font-semibold text-[#2f6bff]">
+          Forgot password?
+        </button>
+      </div>
+
+      <div class="relative">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="Enter your password"
+          class="h-11.5 w-full rounded-[10px] border px-4 pr-10 text-[14px] outline-none transition"
+          [ngClass]="
+            isFieldInvalid(passwordControl)
+              ? 'border-[#f04438] bg-[#fff5f5] text-[#101828]'
+              : 'border-[#eaecf0] bg-[#f2f4f7] text-[#101828] focus:border-[#2f6bff] focus:bg-white'
+          "
+        />
+
+        <button
+          type="button"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-[#98a2b3]"
+          (click)="togglePassword()"
+        >
+          <i class="pi" [ngClass]="showPassword ? 'pi-eye-slash' : 'pi-eye'"></i>
+        </button>
+      </div>
+
+      @if (passwordControl.touched && passwordControl.errors?.['required']) {
+        <p class="mt-2 text-[12px] text-[#f04438]">Password is required.</p>
+      }
+
+      @if (passwordControl.touched && passwordControl.errors?.['minlength']) {
+        <p class="mt-2 text-[12px] text-[#f04438]">Password must be at least 6 characters.</p>
+      }
+    </div>
+
+    @if (loginFail) {
+      <p class="mt-2 text-[12px] text-[#f04438]">{{ serverErrMessage }}</p>
+    }
+
+    <button
+      type="submit"
+      [disabled]="isSubmitting"
+      class="mt-2 flex w-full items-center justify-center rounded-[10px] py-3 text-[14px] font-semibold text-white shadow-[0_6px_20px_rgba(29,78,216,0.3)] transition"
+      [ngClass]="isSubmitting ? 'cursor-not-allowed bg-[#7ea6ff]' : 'bg-[#1d4ed8] hover:opacity-95'"
+      [ngClass]="loginFail == false ? 'bg-green-400' : ' bg-[#1d4ed8]'"
+    >
+      @if (isSubmitting) {
+        <span class="flex items-center gap-2">
+          <i class="pi pi-spin pi-spinner text-[14px]"></i>
+          Signing In...
+        </span>
+      } @else if (loginFail == false) {
+        <span class="flex items-center gap-2">
+          Signin Successful!
+          <i class="pi pi-check text-[14px]"></i>
+        </span>
+      } @else {
+        <span>Sign In</span>
+      }
+    </button>
+  </form>
+</div>

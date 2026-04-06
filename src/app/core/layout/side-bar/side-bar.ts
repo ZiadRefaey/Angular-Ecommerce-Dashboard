@@ -22,7 +22,4 @@ export class SideBar {
         this.currentUrl = event.urlAfterRedirects;
       });
   }
-  logPath() {
-    console.log(this.currentUrl);
-  }
 }

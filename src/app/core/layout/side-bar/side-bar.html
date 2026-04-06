@@ -20,7 +20,6 @@
 <nav class="mt-4 flex flex-col gap-2 px-4 w-full">
   <a
     routerLink="/dashboard"
-    (click)="logPath()"
     class="flex items-center gap-3 p-2 rounded transition-all duration-200"
     [ngClass]="currentUrl.includes('dashboard') ? 'bg-blue-700' : 'hover:bg-gray-800'"
   >
