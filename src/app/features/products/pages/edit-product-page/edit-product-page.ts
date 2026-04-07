@@ -5,6 +5,7 @@ import {
   IProductMediaItem,
   IProductVariation,
 } from '../../models/edit-product-model';
+import { PRODUCT_COLORS } from '../../../../core/Constants/PRODUCT_COLORS';
 type BasicInfoForm = FormGroup<{
   productName: FormControl<string>;
   description: FormControl<string>;
@@ -40,7 +41,9 @@ export class EditProductPage {
   variations: IProductVariation[] = [
     {
       id: 'var-black',
-      name: 'Midnight Black',
+      name: 'Black',
+      colorName: 'Black',
+      colorHex: '#000000',
       sku: 'UV-PRO-BLK',
       priceAdjustment: 0,
       stock: 30,
@@ -68,7 +71,9 @@ export class EditProductPage {
     },
     {
       id: 'var-grey',
-      name: 'Space Grey',
+      name: 'Gray',
+      colorName: 'Gray',
+      colorHex: '#9CA3AF',
       sku: 'UV-PRO-GRY',
       priceAdjustment: 500,
       stock: 15,
@@ -147,9 +152,14 @@ export class EditProductPage {
 
   onAddVariation(): void {
     const nextId = `var-${Date.now()}`;
+    const selectedColorNames = new Set(this.variations.map((variation) => variation.colorName));
+    const nextColor =
+      PRODUCT_COLORS.find((color) => !selectedColorNames.has(color.name)) ?? PRODUCT_COLORS[0];
     const newVariation: IProductVariation = {
       id: nextId,
-      name: `New Variation ${this.variations.length + 1}`,
+      name: nextColor.name,
+      colorName: nextColor.name,
+      colorHex: nextColor.hex,
       sku: `UV-PRO-${this.variations.length + 1}`,
       priceAdjustment: 0,
       stock: 0,

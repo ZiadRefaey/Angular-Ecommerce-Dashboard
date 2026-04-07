@@ -4,7 +4,7 @@
 >
   @if (variation.isDefault) {
     <span
-      class="absolute right-4 top-2.5 rounded-md bg-[#2f6bff] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white"
+      class="absolute right-6 top-0 -translate-y-[50%] rounded-md bg-[#2f6bff] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white"
     >
       Default
     </span>
@@ -18,10 +18,10 @@
 
       <button
         type="button"
-        class="inline-flex h-8.5 items-center gap-2 rounded-lg border border-[#d0d5dd] bg-white px-3 text-[12px] font-medium text-[#475467]"
+        class="inline-flex h-8.5 items-center gap-1 rounded-lg border border-[#d0d5dd] bg-white px-2 text-[10px] font-medium text-[#475467]"
         (click)="editMedia.emit(variation.id)"
       >
-        <i class="pi pi-image text-[12px]"></i>
+        <i class="pi pi-image mb-px"></i>
         <span>Edit Image</span>
       </button>
     </div>
@@ -31,12 +31,11 @@
         <div class="flex items-center gap-2">
           <span
             class="h-3 w-3 rounded-full"
-            [ngClass]="
-              variation.name.toLowerCase().includes('black') ? 'bg-[#111827]' : 'bg-[#cbd5e1]'
-            "
+            [style.backgroundColor]="variation.colorHex"
+            [style.boxShadow]="variation.colorHex === '#FFFFFF' ? 'inset 0 0 0 1px #94a3b8' : null"
           ></span>
           <h3 class="text-[15px] font-semibold text-[#101828]">
-            {{ variation.name }}
+            {{ variation.colorName }}
           </h3>
         </div>
 
@@ -61,7 +60,52 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+        <div>
+          <label
+            class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]"
+          >
+            Color
+          </label>
+          <p-select
+            [options]="selectableColorOptions"
+            [ngModel]="variation.colorName"
+            optionLabel="name"
+            optionValue="name"
+            appendTo="body"
+            panelStyleClass="variation-color-panel"
+            [optionDisabled]="'disabled'"
+            class="w-full variation-color-select"
+            (ngModelChange)="onColorChange($event)"
+          >
+            <ng-template pTemplate="selectedItem" let-selectedColorName>
+              @if (selectedColorName && getColorByName(selectedColorName); as selectedColor) {
+                <div class="flex items-center gap-2">
+                  <span
+                    class="h-3 w-3 rounded-full"
+                    [style.backgroundColor]="selectedColor.hex"
+                    [style.boxShadow]="
+                      selectedColor.hex === '#FFFFFF' ? 'inset 0 0 0 1px #94a3b8' : null
+                    "
+                  ></span>
+                  <span>{{ selectedColor.name }}</span>
+                </div>
+              }
+            </ng-template>
+
+            <ng-template pTemplate="item" let-color>
+              <div class="flex items-center gap-2">
+                <span
+                  class="h-3 w-3 rounded-full"
+                  [style.backgroundColor]="color.hex"
+                  [style.boxShadow]="color.hex === '#FFFFFF' ? 'inset 0 0 0 1px #94a3b8' : null"
+                ></span>
+                <span>{{ color.name }}</span>
+              </div>
+            </ng-template>
+          </p-select>
+        </div>
+
         <div>
           <label
             class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]"

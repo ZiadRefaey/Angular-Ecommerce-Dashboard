@@ -24,6 +24,8 @@
       <app-product-variation-card
         [variation]="variation"
         [isActiveMediaTarget]="variation.id === activeVariationId"
+        [colorOptions]="colorOptions"
+        [unavailableColorNames]="getUnavailableColorNames(variation.id)"
         (editMedia)="variationMediaEdit.emit($event)"
         (setDefault)="variationDefault.emit($event)"
         (deleteVariation)="variationDelete.emit($event)"

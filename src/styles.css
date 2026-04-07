@@ -21,3 +21,26 @@
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+.variation-color-panel {
+  border: 1px solid #dbe4f0 !important;
+  border-radius: 0.75rem !important;
+  background: #ffffff !important;
+  box-shadow: 0 20px 40px rgba(16, 24, 40, 0.12) !important;
+}
+
+.variation-color-panel .p-select-list-container,
+.variation-color-panel .p-select-list,
+.variation-color-panel .p-select-option {
+  background: #ffffff !important;
+}
+
+.variation-color-panel .p-select-option {
+  color: #344054 !important;
+}
+
+.variation-color-panel .p-select-option.p-focus,
+.variation-color-panel .p-select-option.p-select-option-selected {
+  background: #eef4ff !important;
+  color: #175cd3 !important;
+}

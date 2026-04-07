@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IProductVariation } from '../../models/edit-product-model';
+import { PRODUCT_COLORS } from '../../../../core/Constants/PRODUCT_COLORS';
 
 @Component({
   selector: 'app-product-variations',
@@ -11,6 +12,8 @@ export class ProductVariations {
   @Input() variations: IProductVariation[] = [];
   @Input() activeVariationId = '';
 
+  readonly colorOptions = PRODUCT_COLORS;
+
   @Output() variationMediaEdit = new EventEmitter<string>();
   @Output() variationDefault = new EventEmitter<string>();
   @Output() variationDelete = new EventEmitter<string>();
@@ -19,5 +22,11 @@ export class ProductVariations {
 
   onVariationChange(updated: IProductVariation): void {
     this.variationUpdate.emit(updated);
+  }
+
+  getUnavailableColorNames(currentVariationId: string): string[] {
+    return this.variations
+      .filter((variation) => variation.id !== currentVariationId)
+      .map((variation) => variation.colorName);
   }
 }

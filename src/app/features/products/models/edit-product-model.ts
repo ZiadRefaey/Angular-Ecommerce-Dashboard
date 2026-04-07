@@ -7,6 +7,8 @@ export interface IProductMediaItem {
 export interface IProductVariation {
   id: string;
   name: string;
+  colorName: string;
+  colorHex: string;
   sku: string;
   priceAdjustment: number;
   stock: number;
