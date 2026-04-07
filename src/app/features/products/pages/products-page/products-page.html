@@ -21,18 +21,19 @@
     </div>
 
     <div class="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <app-stats-card
-        *ngFor="let card of statsCards"
-        [iconClass]="card.iconClass"
-        [iconWrapperClass]="card.iconWrapperClass"
-        [title]="card.title"
-        [value]="card.value"
-      ></app-stats-card>
+      @for (card of statsCards; track card.title) {
+        <app-stats-card
+          [iconClass]="card.iconClass"
+          [iconWrapperClass]="card.iconWrapperClass"
+          [title]="card.title"
+          [value]="card.value"
+        ></app-stats-card>
+      }
     </div>
 
     <div class="mt-7">
       <app-data-table
-        [data]="products"
+        [data]="paginatedProducts"
         [columns]="columns"
         [minWidth]="'100%'"
         [topLeftTemplate]="topLeft"
@@ -42,21 +43,32 @@
       ></app-data-table>
 
       <ng-template #topLeft>
-        <app-products-filters></app-products-filters>
+        <app-products-filters
+          [searchTerm]="searchTerm"
+          [categoryOptions]="categoryOptions"
+          [stockOptions]="stockOptions"
+          [selectedCategory]="selectedCategory"
+          [selectedStockStatus]="selectedStockStatus"
+          (searchTermChange)="updateSearchTerm($event)"
+          (selectedCategoryChange)="updateSelectedCategory($event)"
+          (selectedStockStatusChange)="updateSelectedStockStatus($event)"
+        ></app-products-filters>
       </ng-template>
 
       <ng-template #topRight>
-        <p class="text-[14px] text-[#667085]">Showing 1-8 of 124 products</p>
+        <p class="text-[14px] text-[#667085]">
+          Showing {{ showingFrom }}-{{ showingTo }} of {{ filteredProducts.length }} products
+        </p>
       </ng-template>
 
       <ng-template #body let-product let-mobile="mobile">
-        <ng-container *ngIf="mobile; else desktopRow">
+        @if (mobile) {
           <div class="px-4 py-4">
             <div class="flex items-start gap-3">
               <img
                 [src]="product.image"
                 [alt]="product.name"
-                class="h-13 w-13 rounded-lg border border-[#e4e7ec] object-cover"
+                class="h-14 w-14 rounded-lg border border-[#e4e7ec] object-cover"
               />
 
               <div class="min-w-0 flex-1">
@@ -109,9 +121,7 @@
               </div>
             </div>
           </div>
-        </ng-container>
-
-        <ng-template #desktopRow>
+        } @else {
           <tr>
             <td class="table-body-cell">
               <img
@@ -123,7 +133,10 @@
 
             <td class="table-body-cell">
               <div>
-                <a routerLink="/products/1" class="text-[15px] font-semibold text-[#101828]">
+                <a
+                  [routerLink]="['/products', product.id]"
+                  class="text-[15px] font-semibold text-[#101828]"
+                >
                   {{ product.name }}
                 </a>
                 <p class="text-[13px] text-[#98a2b3]">SKU: {{ product.sku }}</p>
@@ -174,7 +187,7 @@
               </div>
             </td>
           </tr>
-        </ng-template>
+        }
       </ng-template>
 
       <ng-template #footer>
@@ -182,42 +195,39 @@
           <button
             type="button"
             class="inline-flex items-center gap-1 text-[14px] font-medium text-[#667085]"
+            [disabled]="currentPage === 1"
+            [class.opacity-50]="currentPage === 1"
+            [class.pointer-events-none]="currentPage === 1"
+            (click)="goToPreviousPage()"
           >
             <i class="pi pi-angle-left text-[12px]"></i>
             <span>Previous</span>
           </button>
 
           <div class="flex items-center justify-center gap-2">
-            <button
-              type="button"
-              class="flex h-7 w-7 items-center justify-center rounded-md bg-[#2f6bff] text-[13px] font-semibold text-white"
-            >
-              1
-            </button>
-            <button
-              type="button"
-              class="flex h-7 w-7 items-center justify-center text-[13px] text-[#475467]"
-            >
-              2
-            </button>
-            <button
-              type="button"
-              class="flex h-7 w-7 items-center justify-center text-[13px] text-[#475467]"
-            >
-              3
-            </button>
-            <span class="px-1 text-[13px] text-[#98a2b3]">...</span>
-            <button
-              type="button"
-              class="flex h-7 w-7 items-center justify-center text-[13px] text-[#475467]"
-            >
-              12
-            </button>
+            @for (page of pageNumbers; track page) {
+              <button
+                type="button"
+                class="flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-semibold transition"
+                [ngClass]="
+                  page === currentPage
+                    ? 'bg-[#2f6bff] text-white'
+                    : 'text-[#475467] hover:bg-[#f2f4f7]'
+                "
+                (click)="goToPage(page)"
+              >
+                {{ page }}
+              </button>
+            }
           </div>
 
           <button
             type="button"
             class="inline-flex items-center gap-1 self-end text-[14px] font-medium text-[#667085] md:self-auto"
+            [disabled]="currentPage === totalPages"
+            [class.opacity-50]="currentPage === totalPages"
+            [class.pointer-events-none]="currentPage === totalPages"
+            (click)="goToNextPage()"
           >
             <span>Next</span>
             <i class="pi pi-angle-right text-[12px]"></i>
