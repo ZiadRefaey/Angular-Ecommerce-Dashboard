@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { DashboardStat } from '../../models/dashboard-stat.model';
 import { Order } from '../../models/order.model';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -10,7 +9,6 @@ import { HttpClient } from '@angular/common/http';
   standalone: false,
 })
 export class DashboardOverview {
-  http = inject(HttpClient);
   stats: DashboardStat[] = [
     {
       id: 1,
@@ -81,12 +79,4 @@ export class DashboardOverview {
       date: 'Oct 22, 2023',
     },
   ];
-  test() {
-    console.log('test');
-    this.http.get('http://localhost:3000/api/product/getAllProducts').subscribe({
-      next: () => {
-        console.log('working');
-      },
-    });
-  }
 }

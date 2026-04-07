@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { AuthService } from '../../services/auth-service';
 
 @Component({
   selector: 'app-side-bar',
@@ -14,6 +15,7 @@ import { filter } from 'rxjs';
 })
 export class SideBar {
   private router = inject(Router);
+  private authService = inject(AuthService);
   currentUrl = '';
   ngOnInit() {
     this.router.events
@@ -21,5 +23,9 @@ export class SideBar {
       .subscribe((event: NavigationEnd) => {
         this.currentUrl = event.urlAfterRedirects;
       });
+  }
+  logout() {
+    this.authService.logout();
+    console.log('clicked');
   }
 }
