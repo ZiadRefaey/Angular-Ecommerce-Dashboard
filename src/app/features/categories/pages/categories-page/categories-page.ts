@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { Category, CategoryStatsCard, CategoryStatus } from '../../models/categories.model';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
 
+type CategorySortField = 'name' | 'status' | 'createdAt';
+type CategorySortDirection = 'asc' | 'desc';
+
 @Component({
   selector: 'app-categories-page',
   standalone: false,
@@ -25,16 +28,16 @@ export class CategoriesPage {
 
   readonly pageSize = 4;
   readonly statusOptions: Array<'ALL' | CategoryStatus> = ['ALL', 'ACTIVE', 'DRAFT'];
-  readonly sortFields = [
+  readonly sortFields: ReadonlyArray<{ label: string; value: CategorySortField }> = [
     { label: 'Name', value: 'name' },
     { label: 'Status', value: 'status' },
     { label: 'Date Added', value: 'createdAt' },
-  ] as const;
+  ];
 
   searchTerm = '';
   selectedStatus: 'ALL' | CategoryStatus = 'ALL';
-  selectedSortField: (typeof this.sortFields)[number]['value'] = 'name';
-  selectedSortDirection: 'asc' | 'desc' = 'asc';
+  selectedSortField: CategorySortField = 'name';
+  selectedSortDirection: CategorySortDirection = 'asc';
   currentPage = 1;
 
   allCategories: Category[] = [
@@ -223,12 +226,12 @@ export class CategoriesPage {
     this.resetPagination();
   }
 
-  updateSelectedSortField(value: (typeof this.sortFields)[number]['value']): void {
+  updateSelectedSortField(value: CategorySortField): void {
     this.selectedSortField = value;
     this.resetPagination();
   }
 
-  updateSelectedSortDirection(value: 'asc' | 'desc'): void {
+  updateSelectedSortDirection(value: CategorySortDirection): void {
     this.selectedSortDirection = value;
     this.resetPagination();
   }
@@ -251,9 +254,5 @@ export class CategoriesPage {
 
   private resetPagination(): void {
     this.currentPage = 1;
-  }
-
-  getStatusVariant(status: CategoryStatus): 'success' | 'warning' {
-    return status === 'ACTIVE' ? 'success' : 'warning';
   }
 }
