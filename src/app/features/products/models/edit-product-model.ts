@@ -9,8 +9,6 @@ export interface IProductVariation {
   name: string;
   colorName: string;
   colorHex: string;
-  sku: string;
-  priceAdjustment: number;
   stock: number;
   image: string;
   isDefault: boolean;

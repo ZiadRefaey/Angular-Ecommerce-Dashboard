@@ -60,14 +60,14 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div>
           <label
             class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]"
           >
             Color
           </label>
-          <p-select
+          <p-select 
             [options]="selectableColorOptions"
             [ngModel]="variation.colorName"
             optionLabel="name"
@@ -104,34 +104,6 @@
               </div>
             </ng-template>
           </p-select>
-        </div>
-
-        <div>
-          <label
-            class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]"
-          >
-            SKU
-          </label>
-          <input
-            type="text"
-            [value]="variation.sku"
-            (input)="onSkuChange($any($event.target).value)"
-            class="h-10 w-full rounded-lg border border-[#e4e7ec] bg-white px-3 text-[13px] text-[#344054] outline-none"
-          />
-        </div>
-
-        <div>
-          <label
-            class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]"
-          >
-            Price Adj.
-          </label>
-          <input
-            type="number"
-            [value]="variation.priceAdjustment"
-            (input)="onPriceAdjChange($any($event.target).value)"
-            class="h-10 w-full rounded-lg border border-[#e4e7ec] bg-white px-3 text-[13px] text-[#344054] outline-none"
-          />
         </div>
 
         <div>

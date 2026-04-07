@@ -28,17 +28,6 @@ export class ProductVariationCard {
     }));
   }
 
-  onSkuChange(value: string): void {
-    this.variationChange.emit({ ...this.variation, sku: value });
-  }
-
-  onPriceAdjChange(value: string): void {
-    this.variationChange.emit({
-      ...this.variation,
-      priceAdjustment: Number(value) || 0,
-    });
-  }
-
   onStockChange(value: string): void {
     this.variationChange.emit({
       ...this.variation,

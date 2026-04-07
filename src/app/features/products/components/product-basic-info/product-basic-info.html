@@ -76,11 +76,11 @@
         >
           Stock
         </label>
-        <input
-          type="number"
-          formControlName="stock"
-          class="h-11.5 w-full rounded-[10px] border border-[#eaecf0] bg-[#f8fafc] px-4 text-[14px] text-[#101828] outline-none focus:border-[#2f6bff] focus:bg-white"
-        />
+        <div
+          class="flex h-11.5 w-full items-center rounded-[10px] border border-[#eaecf0] bg-[#f8fafc] px-4 text-[14px] font-medium text-[#101828]"
+        >
+          {{ totalStock }}
+        </div>
       </div>
     </div>
   </form>

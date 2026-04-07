@@ -11,7 +11,6 @@ type BasicInfoForm = FormGroup<{
   description: FormControl<string>;
   category: FormControl<string>;
   price: FormControl<number>;
-  stock: FormControl<number>;
 }>;
 type PublishingForm = FormGroup<{
   visibility: FormControl<boolean>;
@@ -44,8 +43,6 @@ export class EditProductPage {
       name: 'Black',
       colorName: 'Black',
       colorHex: '#000000',
-      sku: 'UV-PRO-BLK',
-      priceAdjustment: 0,
       stock: 30,
       image: 'assets/products/variations/black-main.jpg',
       isDefault: true,
@@ -74,8 +71,6 @@ export class EditProductPage {
       name: 'Gray',
       colorName: 'Gray',
       colorHex: '#9CA3AF',
-      sku: 'UV-PRO-GRY',
-      priceAdjustment: 500,
       stock: 15,
       image: 'assets/products/variations/grey-main.jpg',
       isDefault: false,
@@ -102,6 +97,10 @@ export class EditProductPage {
     return this.variations.find((variation) => variation.id === this.activeVariationId);
   }
 
+  get totalVariationStock(): number {
+    return this.variations.reduce((total, variation) => total + variation.stock, 0);
+  }
+
   constructor(private fb: FormBuilder) {
     this.basicInfoForm = this.fb.group({
       productName: this.fb.nonNullable.control('UltraVision Pro 4K Monitor', [Validators.required]),
@@ -111,7 +110,6 @@ export class EditProductPage {
       ),
       category: this.fb.nonNullable.control('monitors', [Validators.required]),
       price: this.fb.nonNullable.control(12499.99, [Validators.required]),
-      stock: this.fb.nonNullable.control(45, [Validators.required]),
     });
 
     this.publishingForm = this.fb.group({
@@ -160,8 +158,6 @@ export class EditProductPage {
       name: nextColor.name,
       colorName: nextColor.name,
       colorHex: nextColor.hex,
-      sku: `UV-PRO-${this.variations.length + 1}`,
-      priceAdjustment: 0,
       stock: 0,
       image: 'assets/products/variations/placeholder.jpg',
       isDefault: false,

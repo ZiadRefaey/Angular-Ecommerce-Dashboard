@@ -11,4 +11,5 @@ import { IProductCategoryOption } from '../../models/edit-product-model';
 export class ProductBasicInfo {
   @Input({ required: true }) form!: FormGroup;
   @Input() categories: IProductCategoryOption[] = [];
+  @Input() totalStock = 0;
 }

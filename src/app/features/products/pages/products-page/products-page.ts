@@ -53,7 +53,6 @@ export class ProductsPage {
       id: 1,
       image: 'assets/products/headphones-1.jpg',
       name: 'Sony WH-1000XM5',
-      sku: 'SNY-HDP-005',
       category: 'AUDIO',
       price: 349,
       stockStatus: 'IN_STOCK',
@@ -63,7 +62,6 @@ export class ProductsPage {
       id: 2,
       image: 'assets/products/phone-1.jpg',
       name: 'Samsung Galaxy S24 Ultra',
-      sku: 'SMG-S24-U',
       category: 'MOBILE',
       price: 1299,
       stockStatus: 'IN_STOCK',
@@ -73,7 +71,6 @@ export class ProductsPage {
       id: 3,
       image: 'assets/products/macbook-1.jpg',
       name: 'MacBook Air M3',
-      sku: 'APL-MBA-M3',
       category: 'COMPUTING',
       price: 1099,
       stockStatus: 'LOW_STOCK',
@@ -83,7 +80,6 @@ export class ProductsPage {
       id: 4,
       image: 'assets/products/ipad-1.jpg',
       name: 'iPad Pro 11-inch',
-      sku: 'APL-IPP-11',
       category: 'MOBILE',
       price: 799,
       stockStatus: 'OUT_OF_STOCK',
@@ -93,7 +89,6 @@ export class ProductsPage {
       id: 5,
       image: 'assets/products/headphones-2.jpg',
       name: 'Bose QuietComfort Ultra',
-      sku: 'BSE-QC-ULT',
       category: 'AUDIO',
       price: 429,
       stockStatus: 'IN_STOCK',
@@ -103,7 +98,6 @@ export class ProductsPage {
       id: 6,
       image: 'assets/products/phone-1.jpg',
       name: 'Google Pixel 9 Pro',
-      sku: 'GGL-PXL-9P',
       category: 'MOBILE',
       price: 999,
       stockStatus: 'LOW_STOCK',
@@ -113,7 +107,6 @@ export class ProductsPage {
       id: 7,
       image: 'assets/products/macbook-1.jpg',
       name: 'Dell XPS 14',
-      sku: 'DLL-XPS-14',
       category: 'COMPUTING',
       price: 1599,
       stockStatus: 'IN_STOCK',
@@ -123,7 +116,6 @@ export class ProductsPage {
       id: 8,
       image: 'assets/products/headphones-2.jpg',
       name: 'JBL Live 770NC',
-      sku: 'JBL-LIV-770',
       category: 'AUDIO',
       price: 199,
       stockStatus: 'OUT_OF_STOCK',
@@ -133,7 +125,6 @@ export class ProductsPage {
       id: 9,
       image: 'assets/products/ipad-1.jpg',
       name: 'Lenovo Tab P12',
-      sku: 'LNV-TAB-P12',
       category: 'MOBILE',
       price: 379,
       stockStatus: 'IN_STOCK',
@@ -143,7 +134,6 @@ export class ProductsPage {
       id: 10,
       image: 'assets/products/headphones-1.jpg',
       name: 'Logitech G Pro X 2',
-      sku: 'LOG-GPX2-HS',
       category: 'AUDIO',
       price: 249,
       stockStatus: 'LOW_STOCK',
@@ -194,9 +184,7 @@ export class ProductsPage {
 
     return this.allProducts.filter((product) => {
       const matchesSearch =
-        !normalizedSearchTerm ||
-        product.name.toLowerCase().includes(normalizedSearchTerm) ||
-        product.sku.toLowerCase().includes(normalizedSearchTerm);
+        !normalizedSearchTerm || product.name.toLowerCase().includes(normalizedSearchTerm);
       const matchesCategory =
         this.selectedCategory === 'ALL' || product.category === this.selectedCategory;
       const matchesStock =

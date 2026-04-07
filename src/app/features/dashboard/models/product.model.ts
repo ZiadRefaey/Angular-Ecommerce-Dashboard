@@ -5,7 +5,6 @@ export interface Product {
   id: number;
   image: string;
   name: string;
-  sku: string;
   category: ProductCategory;
   price: number;
   stockStatus: ProductStockStatus;
