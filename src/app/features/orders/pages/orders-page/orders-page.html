@@ -1,241 +1,42 @@
 <section class="min-h-screen bg-[#f4f7fb] px-4 py-5 sm:px-5 lg:px-6">
   <div class="mx-auto w-full max-w-7xl">
-    <div>
-      <h1 class="text-[22px] font-bold leading-tight text-[#101828]">Orders</h1>
-      <p class="mt-1 text-[14px] font-medium text-[#667085]">
-        Track and manage customer orders across your store
-      </p>
-    </div>
+    <app-orders-page-header></app-orders-page-header>
 
-    <div class="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <app-stats-card
-        *ngFor="let card of statsCards"
-        [iconClass]="card.iconClass"
-        [iconWrapperClass]="card.iconWrapperClass"
-        [title]="card.title"
-        [value]="card.value"
-      ></app-stats-card>
-    </div>
+    <app-order-stats-cards class="mt-7" [statsCards]="statsCards"></app-order-stats-cards>
 
-    <div class="mt-7">
-      <app-data-table
-        [data]="orders"
+    <div class="mt-7 overflow-hidden rounded-[14px] border border-[#dde5ef] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+      <app-orders-table-filters
+        [searchTerm]="searchTerm"
+        [selectedOrderStatus]="selectedOrderStatus"
+        [selectedPaymentStatus]="selectedPaymentStatus"
+        [selectedSortField]="selectedSortField"
+        [selectedSortDirection]="selectedSortDirection"
+        [orderStatusOptions]="orderStatusOptions"
+        [paymentStatusOptions]="paymentStatusOptions"
+        [sortFields]="sortFields"
+        (searchTermChange)="updateSearchTerm($event)"
+        (selectedOrderStatusChange)="updateSelectedOrderStatus($event)"
+        (selectedPaymentStatusChange)="updateSelectedPaymentStatus($event)"
+        (selectedSortFieldChange)="updateSelectedSortField($event)"
+        (selectedSortDirectionChange)="updateSelectedSortDirection($event)"
+      ></app-orders-table-filters>
+
+      <app-orders-table
+        [orders]="paginatedOrders"
         [columns]="columns"
-        [minWidth]="'100%'"
-        [topLeftTemplate]="topLeft"
-        [topRightTemplate]="topRight"
-        [bodyTemplate]="body"
-        [footerTemplate]="footer"
-      ></app-data-table>
+        [showingFrom]="showingFrom"
+        [showingTo]="showingTo"
+        [totalItems]="filteredAndSortedOrders.length"
+      ></app-orders-table>
 
-      <ng-template #topLeft>
-        <div class="flex flex-wrap items-center gap-3">
-          <span class="text-[14px] font-medium text-[#667085]">Filters:</span>
-
-          <button
-            type="button"
-            class="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d8e0ea] bg-white px-4 text-[14px] text-[#101828]"
-          >
-            <span>All Orders</span>
-            <i class="pi pi-angle-down text-[12px] text-[#667085]"></i>
-          </button>
-
-          <button
-            type="button"
-            class="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d8e0ea] bg-white px-4 text-[14px] text-[#101828]"
-          >
-            <span>All Status</span>
-            <i class="pi pi-angle-down text-[12px] text-[#667085]"></i>
-          </button>
-        </div>
-      </ng-template>
-
-      <ng-template #topRight>
-        <p class="text-[14px] text-[#667085]">Showing 1-6 of 1,284 orders</p>
-      </ng-template>
-
-      <ng-template #body let-order let-mobile="mobile">
-        <ng-container *ngIf="mobile; else desktopRow">
-          <div class="px-4 py-4">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <p class="text-[14px] font-semibold text-[#101828]">
-                  {{ order.orderId }}
-                </p>
-                <p class="mt-1 text-[13px] font-medium text-[#344054]">
-                  {{ order.total | currency: 'USD' : 'symbol' : '1.2-2' }}
-                </p>
-              </div>
-
-              <button type="button" class="text-[#667085]">
-                <i class="pi pi-ellipsis-h text-[14px]"></i>
-              </button>
-            </div>
-
-            <div class="mt-4 flex items-start gap-3">
-              <div
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#eef2ff] text-[14px] font-semibold text-[#2f6bff]"
-              >
-                {{ getInitial(order.customerName) }}
-              </div>
-
-              <div class="min-w-0">
-                <p class="text-[14px] font-semibold text-[#101828]">
-                  {{ order.customerName }}
-                </p>
-                <p class="truncate text-[12px] text-[#98a2b3]">
-                  {{ order.customerEmail }}
-                </p>
-              </div>
-            </div>
-
-            <div class="mt-4 flex flex-wrap items-center gap-2">
-              <app-status-badge
-                [label]="order.orderStatus"
-                [variant]="getOrderStatusVariant(order.orderStatus)"
-              ></app-status-badge>
-
-              <app-status-badge
-                [label]="order.paymentStatus"
-                [variant]="getPaymentStatusVariant(order.paymentStatus)"
-              ></app-status-badge>
-            </div>
-
-            <div class="mt-4 flex items-center justify-between">
-              <p class="text-[12px] text-[#98a2b3]">
-                {{ order.date }}
-              </p>
-
-              <div class="flex items-center gap-4">
-                <button type="button" class="text-[#667085]">
-                  <i class="pi pi-eye text-[14px]"></i>
-                </button>
-                <button type="button" class="text-[#667085]">
-                  <i class="pi pi-ellipsis-h text-[14px]"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </ng-container>
-
-        <ng-template #desktopRow>
-          <tr>
-            <td class="table-body-cell">
-              <a
-                routerLink="/orders/1"
-                class="text-[14px] font-semibold text-blue-700 hover:underline"
-              >
-                {{ order.orderId }}
-              </a>
-            </td>
-
-            <td class="table-body-cell">
-              <div class="flex items-center gap-3">
-                <div
-                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#eef2ff] text-[14px] font-semibold text-[#2f6bff]"
-                >
-                  {{ getInitial(order.customerName) }}
-                </div>
-
-                <div class="min-w-0">
-                  <p class="text-[14px] font-semibold text-[#101828]">
-                    {{ order.customerName }}
-                  </p>
-                  <p class="truncate text-[12px] text-[#98a2b3]">
-                    {{ order.customerEmail }}
-                  </p>
-                </div>
-              </div>
-            </td>
-
-            <td class="table-body-cell">
-              <span class="text-[14px] font-semibold text-[#344054]">
-                {{ order.total | currency: 'USD' : 'symbol' : '1.2-2' }}
-              </span>
-            </td>
-
-            <td class="table-body-cell">
-              <app-status-badge
-                [label]="order.orderStatus"
-                [variant]="getOrderStatusVariant(order.orderStatus)"
-              ></app-status-badge>
-            </td>
-
-            <td class="table-body-cell">
-              <app-status-badge
-                [label]="order.paymentStatus"
-                [variant]="getPaymentStatusVariant(order.paymentStatus)"
-              ></app-status-badge>
-            </td>
-
-            <td class="table-body-cell">
-              <span class="text-[14px] text-[#667085]">
-                {{ order.date }}
-              </span>
-            </td>
-
-            <td class="table-body-cell">
-              <div class="flex justify-end gap-4">
-                <button type="button" class="text-[#667085] transition hover:opacity-80">
-                  <i class="pi pi-eye text-[14px]"></i>
-                </button>
-
-                <button type="button" class="text-[#667085] transition hover:opacity-80">
-                  <i class="pi pi-ellipsis-h text-[14px]"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </ng-template>
-
-      <ng-template #footer>
-        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <button
-            type="button"
-            class="inline-flex items-center gap-1 text-[14px] font-medium text-[#667085]"
-          >
-            <i class="pi pi-angle-left text-[12px]"></i>
-            <span>Previous</span>
-          </button>
-
-          <div class="flex items-center justify-center gap-2">
-            <button
-              type="button"
-              class="flex h-7 w-7 items-center justify-center rounded-md bg-[#2f6bff] text-[13px] font-semibold text-white"
-            >
-              1
-            </button>
-            <button
-              type="button"
-              class="flex h-7 w-7 items-center justify-center text-[13px] text-[#475467]"
-            >
-              2
-            </button>
-            <button
-              type="button"
-              class="flex h-7 w-7 items-center justify-center text-[13px] text-[#475467]"
-            >
-              3
-            </button>
-            <span class="px-1 text-[13px] text-[#98a2b3]">...</span>
-            <button
-              type="button"
-              class="flex h-7 w-7 items-center justify-center text-[13px] text-[#475467]"
-            >
-              24
-            </button>
-          </div>
-
-          <button
-            type="button"
-            class="inline-flex items-center gap-1 self-end text-[14px] font-medium text-[#667085] md:self-auto"
-          >
-            <span>Next</span>
-            <i class="pi pi-angle-right text-[12px]"></i>
-          </button>
-        </div>
-      </ng-template>
+      <app-orders-pagination
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [pageNumbers]="pageNumbers"
+        (previousPage)="goToPreviousPage()"
+        (nextPage)="goToNextPage()"
+        (pageChange)="goToPage($event)"
+      ></app-orders-pagination>
     </div>
   </div>
 </section>

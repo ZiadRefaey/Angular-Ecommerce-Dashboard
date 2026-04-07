@@ -1,0 +1,42 @@
+<div class="flex flex-col gap-3 border-t border-[#edf2f7] bg-white px-4 py-3 md:flex-row md:items-center md:justify-between md:px-5">
+  <button
+    type="button"
+    class="inline-flex items-center gap-1 text-[14px] font-medium text-[#667085]"
+    [disabled]="currentPage === 1"
+    [class.pointer-events-none]="currentPage === 1"
+    [class.opacity-50]="currentPage === 1"
+    (click)="onPreviousPage()"
+  >
+    <i class="pi pi-angle-left text-[12px]"></i>
+    <span>Previous</span>
+  </button>
+
+  <div class="flex items-center justify-center gap-2">
+    @for (page of pageNumbers; track page) {
+      <button
+        type="button"
+        class="flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-semibold transition"
+        [ngClass]="
+          page === currentPage
+            ? 'bg-[#2f6bff] text-white'
+            : 'text-[#475467] hover:bg-[#f2f4f7]'
+        "
+        (click)="onPageChange(page)"
+      >
+        {{ page }}
+      </button>
+    }
+  </div>
+
+  <button
+    type="button"
+    class="inline-flex items-center gap-1 self-end text-[14px] font-medium text-[#667085] md:self-auto"
+    [disabled]="currentPage === totalPages"
+    [class.pointer-events-none]="currentPage === totalPages"
+    [class.opacity-50]="currentPage === totalPages"
+    (click)="onNextPage()"
+  >
+    <span>Next</span>
+    <i class="pi pi-angle-right text-[12px]"></i>
+  </button>
+</div>

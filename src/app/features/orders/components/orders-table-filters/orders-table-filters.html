@@ -1,0 +1,57 @@
+<div class="flex flex-col gap-3 border-b border-[#edf2f7] px-4 py-3 md:flex-row md:flex-wrap md:items-center md:px-5">
+  <label class="relative min-w-56 flex-1 md:max-w-xs">
+    <i
+      class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-[#98a2b3]"
+    ></i>
+    <input
+      type="text"
+      [ngModel]="searchTerm"
+      (ngModelChange)="onSearchTermChange($event)"
+      placeholder="Search orders..."
+      class="h-10 w-full rounded-lg border border-[#d8e0ea] bg-white pl-9 pr-3 text-[14px] text-[#101828] outline-none transition placeholder:text-[#98a2b3] focus:border-[#2f6bff]"
+    />
+  </label>
+
+  <select
+    [ngModel]="selectedOrderStatus"
+    (ngModelChange)="onOrderStatusChange($event)"
+    class="h-10 min-w-40 rounded-lg border border-[#d8e0ea] bg-white px-3 text-[14px] text-[#101828] outline-none transition focus:border-[#2f6bff]"
+  >
+    @for (status of orderStatusOptions; track status) {
+      <option [ngValue]="status">
+        {{ status === 'ALL' ? 'All Orders' : status }}
+      </option>
+    }
+  </select>
+
+  <select
+    [ngModel]="selectedPaymentStatus"
+    (ngModelChange)="onPaymentStatusChange($event)"
+    class="h-10 min-w-40 rounded-lg border border-[#d8e0ea] bg-white px-3 text-[14px] text-[#101828] outline-none transition focus:border-[#2f6bff]"
+  >
+    @for (status of paymentStatusOptions; track status) {
+      <option [ngValue]="status">
+        {{ status === 'ALL' ? 'All Payment' : status }}
+      </option>
+    }
+  </select>
+
+  <select
+    [ngModel]="selectedSortField"
+    (ngModelChange)="onSortFieldChange($event)"
+    class="h-10 min-w-40 rounded-lg border border-[#d8e0ea] bg-white px-3 text-[14px] text-[#101828] outline-none transition focus:border-[#2f6bff]"
+  >
+    @for (sortField of sortFields; track sortField.value) {
+      <option [ngValue]="sortField.value">Sort by {{ sortField.label }}</option>
+    }
+  </select>
+
+  <select
+    [ngModel]="selectedSortDirection"
+    (ngModelChange)="onSortDirectionChange($event)"
+    class="h-10 min-w-36 rounded-lg border border-[#d8e0ea] bg-white px-3 text-[14px] text-[#101828] outline-none transition focus:border-[#2f6bff]"
+  >
+    <option [ngValue]="'asc'">Ascending</option>
+    <option [ngValue]="'desc'">Descending</option>
+  </select>
+</div>
