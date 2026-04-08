@@ -2,12 +2,15 @@ import { inject, Injectable } from '@angular/core';
 import { IUser } from '../models/services.model';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { env } from '../../../enviroment/.env';
+import { API_ENDPOINTS } from '../Constants/api-endpoints';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   accessToken = 'token';
+  private readonly authApiUrl = `${env.apiBaseUrl}${API_ENDPOINTS.auth.login}`;
   private http = inject(HttpClient);
   router = inject(Router);
   getToken() {
@@ -20,7 +23,7 @@ export class AuthService {
     return !!localStorage.getItem(this.accessToken);
   }
   login(creds: IUser) {
-    return this.http.post('http://localhost:3000/api/auth/login', {
+    return this.http.post(this.authApiUrl, {
       email: creds.email,
       password: creds.password,
     });

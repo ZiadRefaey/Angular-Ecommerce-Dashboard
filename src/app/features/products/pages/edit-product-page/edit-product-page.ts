@@ -6,6 +6,9 @@ import {
   IProductVariation,
 } from '../../models/edit-product-model';
 import { PRODUCT_COLORS } from '../../../../core/Constants/PRODUCT_COLORS';
+
+const DEFAULT_PRODUCT_IMAGE = '/product-media.jpg';
+
 type BasicInfoForm = FormGroup<{
   productName: FormControl<string>;
   description: FormControl<string>;
@@ -44,27 +47,9 @@ export class EditProductPage {
       colorName: 'Black',
       colorHex: '#000000',
       stock: 30,
-      image: 'assets/products/variations/black-main.jpg',
+      image: DEFAULT_PRODUCT_IMAGE,
       isDefault: true,
-      media: [
-        {
-          id: 'blk-1',
-          image: 'assets/products/variations/black-main.jpg',
-          isDefault: true,
-        },
-        {
-          id: 'blk-2',
-          image: 'assets/products/variations/black-side.jpg',
-        },
-        {
-          id: 'blk-3',
-          image: 'assets/products/variations/black-detail.jpg',
-        },
-        {
-          id: 'blk-4',
-          image: 'assets/products/variations/black-alt.jpg',
-        },
-      ],
+      media: [this.createDefaultMediaItem('var-black')],
     },
     {
       id: 'var-grey',
@@ -72,19 +57,9 @@ export class EditProductPage {
       colorName: 'Gray',
       colorHex: '#9CA3AF',
       stock: 15,
-      image: 'assets/products/variations/grey-main.jpg',
+      image: DEFAULT_PRODUCT_IMAGE,
       isDefault: false,
-      media: [
-        {
-          id: 'gry-1',
-          image: 'assets/products/variations/grey-main.jpg',
-          isDefault: true,
-        },
-        {
-          id: 'gry-2',
-          image: 'assets/products/variations/grey-side.jpg',
-        },
-      ],
+      media: [this.createDefaultMediaItem('var-grey')],
     },
   ];
 
@@ -99,6 +74,26 @@ export class EditProductPage {
 
   get totalVariationStock(): number {
     return this.variations.reduce((total, variation) => total + variation.stock, 0);
+  }
+
+  private createDefaultMediaItem(variationId: string): IProductMediaItem {
+    return {
+      id: `${variationId}-default-media`,
+      image: DEFAULT_PRODUCT_IMAGE,
+      isDefault: true,
+    };
+  }
+
+  private createLocalPreviewUrl(file: File): string {
+    return URL.createObjectURL(file);
+  }
+
+  private createUploadedMediaItem(file: File): IProductMediaItem {
+    return {
+      id: `media-${Date.now()}`,
+      image: this.createLocalPreviewUrl(file),
+      isDefault: true,
+    };
   }
 
   constructor(private fb: FormBuilder) {
@@ -159,15 +154,9 @@ export class EditProductPage {
       colorName: nextColor.name,
       colorHex: nextColor.hex,
       stock: 0,
-      image: 'assets/products/variations/placeholder.jpg',
+      image: DEFAULT_PRODUCT_IMAGE,
       isDefault: false,
-      media: [
-        {
-          id: `${nextId}-media-1`,
-          image: 'assets/products/variations/placeholder.jpg',
-          isDefault: true,
-        },
-      ],
+      media: [this.createDefaultMediaItem(nextId)],
     };
 
     this.variations = [...this.variations, newVariation];
@@ -180,22 +169,25 @@ export class EditProductPage {
 
     if (!file || !this.activeVariation) return;
 
-    const fakeUrl = URL.createObjectURL(file);
-
-    const nextMedia: IProductMediaItem = {
-      id: `media-${Date.now()}`,
-      image: fakeUrl,
-      isDefault: false,
-    };
+    const nextMedia = this.createUploadedMediaItem(file);
 
     this.variations = this.variations.map((variation) =>
       variation.id === this.activeVariationId
         ? {
             ...variation,
-            media: [...variation.media, nextMedia],
+            image: nextMedia.image,
+            media: [
+              ...variation.media.map((item) => ({
+                ...item,
+                isDefault: false,
+              })),
+              nextMedia,
+            ],
           }
         : variation,
     );
+
+    input.value = '';
   }
 
   onMediaSelect(imageId: string): void {
