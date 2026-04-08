@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .product-color-select,
+:host ::ng-deep .product-color-select .p-select {
+  width: 100%;
+  min-height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e4e7ec;
+  background: #ffffff;
+  box-shadow: none;
+  color: #344054;
+}
+
+:host ::ng-deep .product-color-select .p-select-label {
+  display: flex;
+  min-height: 2.625rem;
+  align-items: center;
+  padding-left: 0.875rem;
+  font-size: 0.875rem;
+  color: #344054;
+  background: #ffffff;
+}
+
+:host ::ng-deep .product-color-select .p-select-label.p-placeholder {
+  color: #98a2b3;
+}
+
+:host ::ng-deep .product-color-select .p-select-dropdown {
+  width: 2.75rem;
+  color: #98a2b3;
+  background: #ffffff;
+}
+
+:host ::ng-deep .product-color-select .p-select:hover,
+:host ::ng-deep .product-color-select .p-select.p-focus {
+  border-color: #2f6bff;
+}
+
+:host ::ng-deep .product-color-select-invalid .p-select {
+  border-color: #f04438;
+  background: #fff7f7;
+}

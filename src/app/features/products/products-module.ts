@@ -15,6 +15,7 @@ import { ProductPublishing } from './components/product-publishing/product-publi
 import { EditProductPage } from './pages/edit-product-page/edit-product-page';
 import { SelectModule } from 'primeng/select';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ProductColorSelect } from './components/product-color-select/product-color-select';
 @NgModule({
   declarations: [
     ProductsFilters,
@@ -26,6 +27,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     ProductMedia,
     ProductPublishing,
     EditProductPage,
+    ProductColorSelect,
   ],
   imports: [
     CommonModule,

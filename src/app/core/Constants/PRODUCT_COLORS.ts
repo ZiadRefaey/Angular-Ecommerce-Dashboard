@@ -1,4 +1,9 @@
-export const PRODUCT_COLORS = [
+export interface ProductColorOption {
+  name: string;
+  hex: string;
+}
+
+export const PRODUCT_COLORS: readonly ProductColorOption[] = [
   // Neutrals
   { name: 'White', hex: '#FFFFFF' },
   { name: 'Black', hex: '#000000' },
@@ -45,4 +50,4 @@ export const PRODUCT_COLORS = [
   { name: 'Brown', hex: '#92400E' },
   { name: 'Light Brown', hex: '#D2B48C' },
   { name: 'Chocolate', hex: '#7B3F00' },
-] as const;
+];

@@ -98,8 +98,7 @@ export class ProductsPage implements OnInit {
         title: 'INVENTORY VALUE',
         value: new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'USD',
-          minimumFractionDigits: 2,
+          currency: 'EGP',
         }).format(inventoryValue),
       },
     ];

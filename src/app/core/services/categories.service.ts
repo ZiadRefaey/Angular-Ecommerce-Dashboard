@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { forkJoin, map, Observable, of } from 'rxjs';
 import { env } from '../../../enviroment/.env';
-import { CategoriesResponse } from '../../features/categories/models/categories.model';
+import { Category, CategoriesResponse } from '../../features/categories/models/categories.model';
 import { API_ENDPOINTS } from '../Constants/api-endpoints';
 
 @Injectable({
@@ -15,6 +15,22 @@ export class CategoriesService {
   getCategoryById(categoryId: string): Observable<CategoriesResponse> {
     return this.http.get<CategoriesResponse>(
       `${this.categoriesUrl}${API_ENDPOINTS.categories.getById}/${categoryId}`,
+    );
+  }
+
+  getCategoriesByIds(categoryIds: string[]): Observable<Category[]> {
+    const uniqueCategoryIds = [...new Set(categoryIds.filter(Boolean))];
+
+    if (!uniqueCategoryIds.length) {
+      return of([]);
+    }
+
+    return forkJoin(uniqueCategoryIds.map((categoryId) => this.getCategoryById(categoryId))).pipe(
+      map((responses) =>
+        responses
+          .map((response) => response.data[0])
+          .filter((category): category is Category => !!category),
+      ),
     );
   }
 }

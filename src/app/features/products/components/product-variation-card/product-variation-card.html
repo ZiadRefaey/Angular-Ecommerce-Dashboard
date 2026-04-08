@@ -67,43 +67,11 @@
           >
             Color
           </label>
-          <p-select
-            [options]="selectableColorOptions"
+          <app-product-color-select
             [ngModel]="variation.colorName"
-            optionLabel="name"
-            optionValue="name"
-            appendTo="body"
-            panelStyleClass="variation-color-panel"
-            [optionDisabled]="'disabled'"
-            class="w-full variation-color-select"
-            (ngModelChange)="onColorChange($event)"
-          >
-            <ng-template pTemplate="selectedItem" let-selectedColor>
-              @if (selectedColor) {
-                <div class="flex items-center gap-2">
-                  <span
-                    class="h-3 w-3 rounded-full"
-                    [style.backgroundColor]="selectedColor.hex"
-                    [style.boxShadow]="
-                      selectedColor.hex === '#FFFFFF' ? 'inset 0 0 0 1px #94a3b8' : null
-                    "
-                  ></span>
-                  <span>{{ selectedColor.name }}</span>
-                </div>
-              }
-            </ng-template>
-
-            <ng-template pTemplate="item" let-color>
-              <div class="flex items-center gap-2">
-                <span
-                  class="h-3 w-3 rounded-full"
-                  [style.backgroundColor]="color.hex"
-                  [style.boxShadow]="color.hex === '#FFFFFF' ? 'inset 0 0 0 1px #94a3b8' : null"
-                ></span>
-                <span>{{ color.name }}</span>
-              </div>
-            </ng-template>
-          </p-select>
+            [unavailableColorNames]="unavailableColorNames"
+            (colorSelected)="onColorChange($event)"
+          ></app-product-color-select>
         </div>
 
         <div>
