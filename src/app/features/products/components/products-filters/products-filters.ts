@@ -1,5 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
+export interface ProductCategoryOption {
+  id: string;
+  name: string;
+}
+
 @Component({
   selector: 'app-products-filters',
   standalone: false,
@@ -8,7 +13,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class ProductsFilters {
   @Input() searchTerm = '';
-  @Input() categoryOptions: string[] = [];
+  @Input() categoryOptions: ProductCategoryOption[] = [];
   @Input() stockOptions: string[] = [];
   @Input() selectedCategory = 'ALL';
   @Input() selectedStockStatus = 'ALL';

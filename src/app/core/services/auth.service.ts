@@ -10,7 +10,7 @@ import { API_ENDPOINTS } from '../Constants/api-endpoints';
 })
 export class AuthService {
   accessToken = 'token';
-  private readonly authApiUrl = `${env.apiBaseUrl}${API_ENDPOINTS.auth.login}`;
+  private readonly authApiUrl = `${env.apiBaseUrl}/api${API_ENDPOINTS.auth.login}`;
   private http = inject(HttpClient);
   router = inject(Router);
   getToken() {

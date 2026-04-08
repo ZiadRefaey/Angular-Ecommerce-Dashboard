@@ -1,11 +1,17 @@
 export const API_ENDPOINTS = {
   auth: {
     login: '/auth/login',
+    profile: '/auth/me',
+  },
+  categories: {
+    base: '/category',
+    getById: '/getCategoryById',
   },
   products: {
-    base: '/products',
+    base: '/product',
+    getAll: '/getAllProducts',
   },
   orders: {
-    base: '/orders',
+    base: '/order',
   },
 } as const;

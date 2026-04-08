@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
-import { AuthService } from '../../services/auth-service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-side-bar',

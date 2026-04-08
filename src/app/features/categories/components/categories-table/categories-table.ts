@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Category, CategoryStatus } from '../../models/categories.model';
+import { CategoryListItem, CategoryStatus } from '../../models/categories.model';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
 
 @Component({
@@ -9,7 +9,7 @@ import { DataTableColumn } from '../../../../shared/components/models/data-table
   styleUrl: './categories-table.css',
 })
 export class CategoriesTable {
-  @Input() categories: Category[] = [];
+  @Input() categories: CategoryListItem[] = [];
   @Input() columns: DataTableColumn[] = [];
   @Input() showingFrom = 0;
   @Input() showingTo = 0;

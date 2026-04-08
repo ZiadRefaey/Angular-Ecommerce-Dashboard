@@ -32,206 +32,234 @@
     </div>
 
     <div class="mt-7">
-      <app-data-table
-        [data]="paginatedProducts"
-        [columns]="columns"
-        [minWidth]="'100%'"
-        [topLeftTemplate]="topLeft"
-        [topRightTemplate]="topRight"
-        [bodyTemplate]="body"
-        [footerTemplate]="footer"
-      ></app-data-table>
+      @if (isLoading) {
+        <div
+          class="rounded-[14px] border border-[#dde5ef] bg-white px-5 py-10 shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+        >
+          <div class="flex flex-col items-center justify-center gap-4">
+            <p-progress-spinner
+              strokeWidth="4"
+              animationDuration=".9s"
+              [style]="{ width: '52px', height: '52px' }"
+              class="products-loading-spinner"
+            ></p-progress-spinner>
+            <p class="text-[14px] font-medium text-[#667085]">Loading products...</p>
+          </div>
+        </div>
+      } @else if (errorMessage) {
+        <div
+          class="rounded-[14px] border border-[#fde2e1] bg-white px-5 py-10 text-center shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+        >
+          <p class="text-[14px] font-medium text-[#f04438]">{{ errorMessage }}</p>
+        </div>
+      } @else if (!allProducts.length) {
+        <div
+          class="rounded-[14px] border border-[#dde5ef] bg-white px-5 py-10 text-center shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+        >
+          <p class="text-[14px] font-medium text-[#667085]">No products were returned yet.</p>
+        </div>
+      } @else {
+        <app-data-table
+          [data]="paginatedProducts"
+          [columns]="columns"
+          [minWidth]="'100%'"
+          [topLeftTemplate]="topLeft"
+          [topRightTemplate]="topRight"
+          [bodyTemplate]="body"
+          [footerTemplate]="footer"
+        ></app-data-table>
 
-      <ng-template #topLeft>
-        <app-products-filters
-          [searchTerm]="searchTerm"
-          [categoryOptions]="categoryOptions"
-          [stockOptions]="stockOptions"
-          [selectedCategory]="selectedCategory"
-          [selectedStockStatus]="selectedStockStatus"
-          (searchTermChange)="updateSearchTerm($event)"
-          (selectedCategoryChange)="updateSelectedCategory($event)"
-          (selectedStockStatusChange)="updateSelectedStockStatus($event)"
-        ></app-products-filters>
-      </ng-template>
+        <ng-template #topLeft>
+          <app-products-filters
+            [searchTerm]="searchTerm"
+            [categoryOptions]="categoryOptions"
+            [stockOptions]="stockOptions"
+            [selectedCategory]="selectedCategory"
+            [selectedStockStatus]="selectedStockStatus"
+            (searchTermChange)="updateSearchTerm($event)"
+            (selectedCategoryChange)="updateSelectedCategory($event)"
+            (selectedStockStatusChange)="updateSelectedStockStatus($event)"
+          ></app-products-filters>
+        </ng-template>
 
-      <ng-template #topRight>
-        <p class="text-[14px] text-[#667085]">
-          Showing {{ showingFrom }}-{{ showingTo }} of {{ filteredProducts.length }} products
-        </p>
-      </ng-template>
+        <ng-template #topRight>
+          <p class="text-[14px] text-[#667085]">
+            Showing {{ showingFrom }}-{{ showingTo }} of {{ filteredProducts.length }} products
+          </p>
+        </ng-template>
 
-      <ng-template #body let-product let-mobile="mobile">
-        @if (mobile) {
-          <div class="px-4 py-4">
-            <div class="flex items-start gap-3">
-              <img
-                [src]="product.image"
-                [alt]="product.name"
-                class="h-14 w-14 rounded-lg border border-[#e4e7ec] object-cover"
-              />
+        <ng-template #body let-product let-mobile="mobile">
+          @if (mobile) {
+            <div class="px-4 py-4">
+              <div class="flex items-start gap-3">
+                <img
+                  [src]="product.image"
+                  [alt]="product.name"
+                  class="h-14 w-14 rounded-lg border border-[#e4e7ec] object-cover"
+                />
 
-              <div class="min-w-0 flex-1">
-                <div class="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 class="text-[14px] font-semibold text-blue-700 hover:underline">
-                      {{ product.name }}
-                    </h3>
-                  </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 class="text-[14px] font-semibold text-blue-700 hover:underline">
+                        {{ product.name }}
+                      </h3>
+                    </div>
 
-                  <span
-                    class="inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold"
-                    [ngClass]="getCategoryClass(product.category)"
-                  >
-                    {{ product.category }}
-                  </span>
-                </div>
-
-                <div class="mt-3 flex items-center justify-between">
-                  <p class="text-[15px] font-semibold text-[#344054]">
-                    {{ product.price | currency: 'USD' : 'symbol' : '1.2-2' }}
-                  </p>
-
-                  <div class="flex items-center gap-1.5">
                     <span
-                      class="h-2 w-2 rounded-full"
-                      [ngClass]="getStockDotClass(product.stockStatus)"
-                    ></span>
-                    <span
-                      class="text-[12px] font-medium"
-                      [ngClass]="getStockTextClass(product.stockStatus)"
+                      class="inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold"
+                      [ngClass]="getCategoryClass(product.category)"
                     >
-                      {{ product.stockLabel }}
+                      {{ getCategoryLabel(product.category) }}
                     </span>
                   </div>
-                </div>
 
-                <div class="mt-3 flex justify-end gap-4">
-                  <button type="button" class="text-[#2f6bff]">
-                    <i class="pi pi-pencil text-[14px]"></i>
-                  </button>
-                  <button type="button" class="text-[#667085]">
-                    <i class="pi pi-eye text-[14px]"></i>
-                  </button>
-                  <button type="button" class="text-[#f04438]">
-                    <i class="pi pi-trash text-[14px]"></i>
-                  </button>
+                  <div class="mt-3 flex items-center justify-between">
+                    <p class="text-[15px] font-semibold text-[#344054]">
+                      {{ product.price | currency: 'USD' : 'symbol' : '1.2-2' }}
+                    </p>
+
+                    <div class="flex items-center gap-1.5">
+                      <span
+                        class="h-2 w-2 rounded-full"
+                        [ngClass]="getStockDotClass(getProductStockStatus(product))"
+                      ></span>
+                      <span
+                        class="text-[12px] font-medium"
+                        [ngClass]="getStockTextClass(getProductStockStatus(product))"
+                      >
+                        {{ getStockLabel(product) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="mt-3 flex justify-end gap-4">
+                    <button type="button" class="text-[#2f6bff]">
+                      <i class="pi pi-pencil text-[14px]"></i>
+                    </button>
+                    <button type="button" class="text-[#667085]">
+                      <i class="pi pi-eye text-[14px]"></i>
+                    </button>
+                    <button type="button" class="text-[#f04438]">
+                      <i class="pi pi-trash text-[14px]"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        } @else {
-          <tr>
-            <td class="table-body-cell">
-              <img
-                [src]="product.image"
-                [alt]="product.name"
-                class="h-9 w-9 rounded-lg border border-[#e4e7ec] object-cover"
-              />
-            </td>
+          } @else {
+            <tr>
+              <td class="table-body-cell">
+                <img
+                  [src]="product.image"
+                  [alt]="product.name"
+                  class="h-9 w-9 rounded-lg border border-[#e4e7ec] object-cover"
+                />
+              </td>
 
-            <td class="table-body-cell">
-              <div>
-                <a
-                  [routerLink]="['/products', product.id]"
-                  class="text-[15px] font-semibold text-blue-700 hover:underline"
-                >
-                  {{ product.name }}
-                </a>
-              </div>
-            </td>
+              <td class="table-body-cell">
+                <div>
+                  <a
+                    [routerLink]="['/products', product._id]"
+                    class="text-[15px] font-semibold text-blue-700 hover:underline"
+                  >
+                    {{ product.name }}
+                  </a>
+                </div>
+              </td>
 
-            <td class="table-body-cell">
-              <span
-                class="inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold"
-                [ngClass]="getCategoryClass(product.category)"
-              >
-                {{ product.category }}
-              </span>
-            </td>
-
-            <td class="table-body-cell text-[15px] font-semibold text-[#344054]">
-              {{ product.price | currency: 'USD' : 'symbol' : '1.2-2' }}
-            </td>
-
-            <td class="table-body-cell">
-              <div class="flex items-center gap-2">
+              <td class="table-body-cell">
                 <span
-                  class="h-2 w-2 rounded-full"
-                  [ngClass]="getStockDotClass(product.stockStatus)"
-                ></span>
-                <span
-                  class="text-[14px] font-medium"
-                  [ngClass]="getStockTextClass(product.stockStatus)"
+                  class="inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold"
+                  [ngClass]="getCategoryClass(product.category)"
                 >
-                  {{ product.stockLabel }}
+                  {{ getCategoryLabel(product.category) }}
                 </span>
-              </div>
-            </td>
+              </td>
 
-            <td class="table-body-cell">
-              <div class="flex justify-end gap-4">
-                <button type="button" class="text-[#2f6bff] transition hover:opacity-80">
-                  <i class="pi pi-pencil text-[14px]"></i>
+              <td class="table-body-cell text-[15px] font-semibold text-[#344054]">
+                {{ product.price | currency: 'USD' : 'symbol' : '1.2-2' }}
+              </td>
+
+              <td class="table-body-cell">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="h-2 w-2 rounded-full"
+                    [ngClass]="getStockDotClass(getProductStockStatus(product))"
+                  ></span>
+                  <span
+                    class="text-[14px] font-medium"
+                    [ngClass]="getStockTextClass(getProductStockStatus(product))"
+                  >
+                    {{ getStockLabel(product) }}
+                  </span>
+                </div>
+              </td>
+
+              <td class="table-body-cell">
+                <div class="flex justify-end gap-4">
+                  <button type="button" class="text-[#2f6bff] transition hover:opacity-80">
+                    <i class="pi pi-pencil text-[14px]"></i>
+                  </button>
+
+                  <button type="button" class="text-[#667085] transition hover:opacity-80">
+                    <i class="pi pi-eye text-[14px]"></i>
+                  </button>
+
+                  <button type="button" class="text-[#f04438] transition hover:opacity-80">
+                    <i class="pi pi-trash text-[14px]"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </ng-template>
+
+        <ng-template #footer>
+          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 text-[14px] font-medium text-[#667085]"
+              [disabled]="currentPage === 1"
+              [class.opacity-50]="currentPage === 1"
+              [class.pointer-events-none]="currentPage === 1"
+              (click)="goToPreviousPage()"
+            >
+              <i class="pi pi-angle-left text-[12px]"></i>
+              <span>Previous</span>
+            </button>
+
+            <div class="flex items-center justify-center gap-2">
+              @for (page of pageNumbers; track page) {
+                <button
+                  type="button"
+                  class="flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-semibold transition"
+                  [ngClass]="
+                    page === currentPage
+                      ? 'bg-[#2f6bff] text-white'
+                      : 'text-[#475467] hover:bg-[#f2f4f7]'
+                  "
+                  (click)="goToPage(page)"
+                >
+                  {{ page }}
                 </button>
+              }
+            </div>
 
-                <button type="button" class="text-[#667085] transition hover:opacity-80">
-                  <i class="pi pi-eye text-[14px]"></i>
-                </button>
-
-                <button type="button" class="text-[#f04438] transition hover:opacity-80">
-                  <i class="pi pi-trash text-[14px]"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        }
-      </ng-template>
-
-      <ng-template #footer>
-        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <button
-            type="button"
-            class="inline-flex items-center gap-1 text-[14px] font-medium text-[#667085]"
-            [disabled]="currentPage === 1"
-            [class.opacity-50]="currentPage === 1"
-            [class.pointer-events-none]="currentPage === 1"
-            (click)="goToPreviousPage()"
-          >
-            <i class="pi pi-angle-left text-[12px]"></i>
-            <span>Previous</span>
-          </button>
-
-          <div class="flex items-center justify-center gap-2">
-            @for (page of pageNumbers; track page) {
-              <button
-                type="button"
-                class="flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-semibold transition"
-                [ngClass]="
-                  page === currentPage
-                    ? 'bg-[#2f6bff] text-white'
-                    : 'text-[#475467] hover:bg-[#f2f4f7]'
-                "
-                (click)="goToPage(page)"
-              >
-                {{ page }}
-              </button>
-            }
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 self-end text-[14px] font-medium text-[#667085] md:self-auto"
+              [disabled]="currentPage === totalPages"
+              [class.opacity-50]="currentPage === totalPages"
+              [class.pointer-events-none]="currentPage === totalPages"
+              (click)="goToNextPage()"
+            >
+              <span>Next</span>
+              <i class="pi pi-angle-right text-[12px]"></i>
+            </button>
           </div>
-
-          <button
-            type="button"
-            class="inline-flex items-center gap-1 self-end text-[14px] font-medium text-[#667085] md:self-auto"
-            [disabled]="currentPage === totalPages"
-            [class.opacity-50]="currentPage === totalPages"
-            [class.pointer-events-none]="currentPage === totalPages"
-            (click)="goToNextPage()"
-          >
-            <span>Next</span>
-            <i class="pi pi-angle-right text-[12px]"></i>
-          </button>
-        </div>
-      </ng-template>
+        </ng-template>
+      }
     </div>
   </div>
   <app-create-product

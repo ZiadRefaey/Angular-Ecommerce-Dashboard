@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../../../core/services/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
 
 type LoginFormType = FormGroup<{

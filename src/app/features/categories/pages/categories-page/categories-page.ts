@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
-import { Category, CategoryStatsCard, CategoryStatus } from '../../models/categories.model';
+import {
+  CategoryListItem,
+  CategoryStatsCard,
+  CategoryStatus,
+} from '../../models/categories.model';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
 
 type CategorySortField = 'name' | 'status' | 'createdAt';
@@ -40,7 +44,7 @@ export class CategoriesPage {
   selectedSortDirection: CategorySortDirection = 'asc';
   currentPage = 1;
 
-  allCategories: Category[] = [
+  allCategories: CategoryListItem[] = [
     {
       id: 1,
       name: 'Laptops & Computers',
@@ -149,7 +153,7 @@ export class CategoriesPage {
     ];
   }
 
-  get filteredAndSortedCategories(): Category[] {
+  get filteredAndSortedCategories(): CategoryListItem[] {
     const normalizedSearch = this.searchTerm.trim().toLowerCase();
 
     const filteredCategories = this.allCategories.filter((category) => {
@@ -181,7 +185,7 @@ export class CategoriesPage {
     });
   }
 
-  get paginatedCategories(): Category[] {
+  get paginatedCategories(): CategoryListItem[] {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     return this.filteredAndSortedCategories.slice(startIndex, startIndex + this.pageSize);
   }

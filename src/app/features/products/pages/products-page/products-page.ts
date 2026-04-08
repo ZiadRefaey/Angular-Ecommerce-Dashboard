@@ -1,11 +1,15 @@
-import { Component } from '@angular/core';
-import {
-  Product,
-  ProductCategory,
-  ProductStockStatus,
-} from '../../../models/product.model';
+import { Component, OnInit, inject } from '@angular/core';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
 import { ProductStatsCard } from '../../../dashboard/models/product.model';
+import { Product, ProductsResponse } from '../../models/products.model';
+import { ProductsService } from '../../../../core/services/products.service';
+import { CategoriesService } from '../../../../core/services/categories.service';
+import { Category } from '../../../categories/models/categories.model';
+import { ProductCategoryOption } from '../../components/products-filters/products-filters';
+
+type ProductStockStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
 
 @Component({
   selector: 'app-products-page',
@@ -13,7 +17,10 @@ import { ProductStatsCard } from '../../../dashboard/models/product.model';
   templateUrl: './products-page.html',
   styleUrl: './products-page.css',
 })
-export class ProductsPage {
+export class ProductsPage implements OnInit {
+  private readonly productsService = inject(ProductsService);
+  private readonly categoriesService = inject(CategoriesService);
+
   columns: DataTableColumn[] = [
     { field: 'image', header: 'IMAGE', width: '12%' },
     { field: 'name', header: 'PRODUCT NAME', width: '30%' },
@@ -34,13 +41,9 @@ export class ProductsPage {
   selectedCategory = 'ALL';
   selectedStockStatus = 'ALL';
   currentPage = 1;
+  isLoading = true;
+  errorMessage = '';
 
-  readonly categoryOptions: Array<'ALL' | ProductCategory> = [
-    'ALL',
-    'AUDIO',
-    'MOBILE',
-    'COMPUTING',
-  ];
   readonly stockOptions: Array<'ALL' | ProductStockStatus> = [
     'ALL',
     'IN_STOCK',
@@ -48,102 +51,25 @@ export class ProductsPage {
     'OUT_OF_STOCK',
   ];
 
-  allProducts: Product[] = [
-    {
-      id: 1,
-      image: 'assets/products/headphones-1.jpg',
-      name: 'Sony WH-1000XM5',
-      category: 'AUDIO',
-      price: 349,
-      stockStatus: 'IN_STOCK',
-      stockLabel: 'In Stock (42)',
-    },
-    {
-      id: 2,
-      image: 'assets/products/phone-1.jpg',
-      name: 'Samsung Galaxy S24 Ultra',
-      category: 'MOBILE',
-      price: 1299,
-      stockStatus: 'IN_STOCK',
-      stockLabel: 'In Stock (18)',
-    },
-    {
-      id: 3,
-      image: 'assets/products/macbook-1.jpg',
-      name: 'MacBook Air M3',
-      category: 'COMPUTING',
-      price: 1099,
-      stockStatus: 'LOW_STOCK',
-      stockLabel: 'Low Stock (5)',
-    },
-    {
-      id: 4,
-      image: 'assets/products/ipad-1.jpg',
-      name: 'iPad Pro 11-inch',
-      category: 'MOBILE',
-      price: 799,
-      stockStatus: 'OUT_OF_STOCK',
-      stockLabel: 'Out of Stock (0)',
-    },
-    {
-      id: 5,
-      image: 'assets/products/headphones-2.jpg',
-      name: 'Bose QuietComfort Ultra',
-      category: 'AUDIO',
-      price: 429,
-      stockStatus: 'IN_STOCK',
-      stockLabel: 'In Stock (12)',
-    },
-    {
-      id: 6,
-      image: 'assets/products/phone-1.jpg',
-      name: 'Google Pixel 9 Pro',
-      category: 'MOBILE',
-      price: 999,
-      stockStatus: 'LOW_STOCK',
-      stockLabel: 'Low Stock (4)',
-    },
-    {
-      id: 7,
-      image: 'assets/products/macbook-1.jpg',
-      name: 'Dell XPS 14',
-      category: 'COMPUTING',
-      price: 1599,
-      stockStatus: 'IN_STOCK',
-      stockLabel: 'In Stock (11)',
-    },
-    {
-      id: 8,
-      image: 'assets/products/headphones-2.jpg',
-      name: 'JBL Live 770NC',
-      category: 'AUDIO',
-      price: 199,
-      stockStatus: 'OUT_OF_STOCK',
-      stockLabel: 'Out of Stock (0)',
-    },
-    {
-      id: 9,
-      image: 'assets/products/ipad-1.jpg',
-      name: 'Lenovo Tab P12',
-      category: 'MOBILE',
-      price: 379,
-      stockStatus: 'IN_STOCK',
-      stockLabel: 'In Stock (24)',
-    },
-    {
-      id: 10,
-      image: 'assets/products/headphones-1.jpg',
-      name: 'Logitech G Pro X 2',
-      category: 'AUDIO',
-      price: 249,
-      stockStatus: 'LOW_STOCK',
-      stockLabel: 'Low Stock (3)',
-    },
-  ];
+  allProducts: Product[] = [];
+  private readonly categoryNamesById: Record<string, string> = {};
+
+  ngOnInit(): void {
+    this.loadProducts();
+  }
+
+  get categoryOptions(): ProductCategoryOption[] {
+    return [...new Set(this.allProducts.map((product) => product.category))]
+      .map((categoryId) => ({
+        id: categoryId,
+        name: this.getCategoryLabel(categoryId),
+      }))
+      .sort((first, second) => first.name.localeCompare(second.name));
+  }
 
   get statsCards(): ProductStatsCard[] {
     const outOfStockCount = this.allProducts.filter(
-      (product) => product.stockStatus === 'OUT_OF_STOCK',
+      (product) => this.getProductStockStatus(product) === 'OUT_OF_STOCK',
     ).length;
     const inventoryValue = this.allProducts.reduce((total, product) => total + product.price, 0);
 
@@ -164,7 +90,7 @@ export class ProductsPage {
         iconClass: 'pi pi-sitemap text-[#9a4dff]',
         iconWrapperClass: 'bg-[#f7f0ff]',
         title: 'CATEGORIES',
-        value: (this.categoryOptions.length - 1).toString(),
+        value: this.categoryOptions.length.toString(),
       },
       {
         iconClass: 'pi pi-wallet text-[#17b26a]',
@@ -184,11 +110,14 @@ export class ProductsPage {
 
     return this.allProducts.filter((product) => {
       const matchesSearch =
-        !normalizedSearchTerm || product.name.toLowerCase().includes(normalizedSearchTerm);
+        !normalizedSearchTerm ||
+        product.name.toLowerCase().includes(normalizedSearchTerm) ||
+        product.description.toLowerCase().includes(normalizedSearchTerm);
       const matchesCategory =
         this.selectedCategory === 'ALL' || product.category === this.selectedCategory;
       const matchesStock =
-        this.selectedStockStatus === 'ALL' || product.stockStatus === this.selectedStockStatus;
+        this.selectedStockStatus === 'ALL' ||
+        this.getProductStockStatus(product) === this.selectedStockStatus;
 
       return matchesSearch && matchesCategory && matchesStock;
     });
@@ -219,20 +148,54 @@ export class ProductsPage {
     return Math.min(this.currentPage * this.pageSize, this.filteredProducts.length);
   }
 
-  getCategoryClass(category: Product['category']): string {
-    switch (category) {
-      case 'AUDIO':
-        return 'bg-[#eef2ff] text-[#2f6bff]';
-      case 'MOBILE':
-        return 'bg-[#eef2ff] text-[#2f6bff]';
-      case 'COMPUTING':
-        return 'bg-[#eef2f6] text-[#475467]';
-      default:
-        return 'bg-slate-100 text-slate-600';
+  loadProducts(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.productsService.getProducts().subscribe({
+      next: (response: ProductsResponse) => {
+        this.allProducts = response.data;
+        this.loadCategoryNames();
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load products right now. Please try again.';
+        this.isLoading = false;
+      },
+    });
+  }
+
+  getCategoryClass(_category: string): string {
+    return 'bg-[#eef2ff] text-[#2f6bff]';
+  }
+
+  getCategoryLabel(category: string): string {
+    return this.categoryNamesById[category] ?? category;
+  }
+
+  getProductStockStatus(product: Product): ProductStockStatus {
+    if (product.stock <= 0) {
+      return 'OUT_OF_STOCK';
+    }
+
+    if (product.stock <= 5) {
+      return 'LOW_STOCK';
+    }
+
+    return 'IN_STOCK';
+  }
+
+  getStockLabel(product: Product): string {
+    switch (this.getProductStockStatus(product)) {
+      case 'IN_STOCK':
+        return `In Stock (${product.stock})`;
+      case 'LOW_STOCK':
+        return `Low Stock (${product.stock})`;
+      case 'OUT_OF_STOCK':
+        return 'Out of Stock (0)';
     }
   }
 
-  getStockDotClass(status: Product['stockStatus']): string {
+  getStockDotClass(status: ProductStockStatus): string {
     switch (status) {
       case 'IN_STOCK':
         return 'bg-[#12b76a]';
@@ -285,11 +248,43 @@ export class ProductsPage {
     this.goToPage(this.currentPage + 1);
   }
 
-  private resetPagination(): void {
+  resetPagination(): void {
     this.currentPage = 1;
   }
 
-  getStockTextClass(status: Product['stockStatus']): string {
+  loadCategoryNames(): void {
+    const uniqueCategoryIds = [...new Set(this.allProducts.map((product) => product.category))];
+
+    if (!uniqueCategoryIds.length) {
+      this.isLoading = false;
+      return;
+    }
+
+    const categoryRequests = uniqueCategoryIds.map((categoryId) =>
+      this.categoriesService
+        .getCategoryById(categoryId)
+        .pipe(catchError(() => of({ message: 'error', data: [] as Category[] }))),
+    );
+
+    forkJoin(categoryRequests).subscribe({
+      next: (responses) => {
+        responses.forEach((response, index) => {
+          const category = response.data[0];
+
+          if (category) {
+            this.categoryNamesById[uniqueCategoryIds[index]] = category.name;
+          }
+        });
+
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      },
+    });
+  }
+
+  getStockTextClass(status: ProductStockStatus): string {
     switch (status) {
       case 'IN_STOCK':
         return 'text-[#039855]';

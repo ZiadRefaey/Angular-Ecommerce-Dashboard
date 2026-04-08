@@ -14,6 +14,7 @@ import { ProductMedia } from './components/product-media/product-media';
 import { ProductPublishing } from './components/product-publishing/product-publishing';
 import { EditProductPage } from './pages/edit-product-page/edit-product-page';
 import { SelectModule } from 'primeng/select';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 @NgModule({
   declarations: [
     ProductsFilters,
@@ -33,6 +34,7 @@ import { SelectModule } from 'primeng/select';
     FormsModule,
     ReactiveFormsModule,
     SelectModule,
+    ProgressSpinnerModule,
   ],
 })
 export class ProductsModule {}
