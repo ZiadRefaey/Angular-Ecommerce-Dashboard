@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
 import { ProductStatsCard } from '../../../dashboard/models/product.model';
-import { Product, ProductsResponse } from '../../models/products.model';
+import { Product, ProductVariation } from '../../models/products.model';
 import { ProductsService } from '../../../../core/services/products.service';
 import { CategoriesService } from '../../../../core/services/categories.service';
 import { Category } from '../../../categories/models/categories.model';
@@ -30,8 +30,8 @@ export class ProductsPage implements OnInit {
       field: 'actions',
       header: 'ACTIONS',
       width: '10%',
-      headerAlign: 'right',
-      bodyAlign: 'right',
+      headerAlign: 'center',
+      bodyAlign: 'center',
     },
   ];
 
@@ -42,6 +42,10 @@ export class ProductsPage implements OnInit {
   currentPage = 1;
   isLoading = true;
   errorMessage = '';
+  isDeleting = false;
+  deleteErrorMessage = '';
+  confirmDeleteOpen = false;
+  pendingDeleteProduct: Product | null = null;
 
   readonly stockOptions: Array<'ALL' | ProductStockStatus> = [
     'ALL',
@@ -241,6 +245,43 @@ export class ProductsPage implements OnInit {
     this.isCreateProductModalOpen = false;
   }
 
+  requestDeleteProduct(product: Product): void {
+    this.pendingDeleteProduct = product;
+    this.deleteErrorMessage = '';
+    this.confirmDeleteOpen = true;
+  }
+
+  closeDeleteModal(): void {
+    this.confirmDeleteOpen = false;
+    this.pendingDeleteProduct = null;
+    this.deleteErrorMessage = '';
+    this.isDeleting = false;
+  }
+
+  confirmDeleteProduct(): void {
+    if (!this.pendingDeleteProduct || this.isDeleting) {
+      return;
+    }
+
+    this.isDeleting = true;
+
+    this.productsService
+      .updateProductById(
+        this.pendingDeleteProduct._id,
+        this.buildDeleteProductFormData(this.pendingDeleteProduct),
+      )
+      .subscribe({
+        next: () => {
+          this.closeDeleteModal();
+          this.refreshProducts();
+        },
+        error: () => {
+          this.isDeleting = false;
+          this.deleteErrorMessage = 'Unable to delete product right now. Please try again.';
+        },
+      });
+  }
+
   refreshProducts(): void {
     this.resetPagination();
     this.loadProducts();
@@ -301,6 +342,57 @@ export class ProductsPage implements OnInit {
     });
 
     return [...uniqueCategories.values()];
+  }
+
+  private buildDeleteProductFormData(product: Product): FormData {
+    const payload = new FormData();
+
+    payload.append('name', product.name);
+    payload.append('description', product.description);
+    payload.append('price', product.price.toString());
+    payload.append('category', product.category);
+    payload.append('featured', String(product.featured));
+    payload.append('visible', String(product.visible));
+    payload.append('isDeleted', 'true');
+    payload.append(
+      'variations',
+      JSON.stringify(
+        this.normalizeProductVariations(product).map((variation) => ({
+          colorName: variation.colorName,
+          colorValue: variation.colorValue,
+          defaultImage: variation.defaultImage || variation.defaultImg || product.image,
+          variationImgs: variation.variationImgs ?? variation.variantImages ?? [],
+          isDefault: variation.isDefault === true,
+          stock: variation.stock,
+        })),
+      ),
+    );
+
+    return payload;
+  }
+
+  private normalizeProductVariations(product: Product): ProductVariation[] {
+    if (!product.variations.length) {
+      return [
+        {
+          colorName: 'Default',
+          colorValue: '#000000',
+          defaultImage: product.image,
+          variationImgs: [],
+          isDefault: true,
+          stock: product.stock,
+        },
+      ];
+    }
+
+    const hasExplicitDefault = product.variations.some((variation) => variation.isDefault === true);
+
+    return product.variations.map((variation, index) => ({
+      ...variation,
+      defaultImage: variation.defaultImage || variation.defaultImg || product.image,
+      variationImgs: variation.variationImgs ?? variation.variantImages ?? [],
+      isDefault: hasExplicitDefault ? variation.isDefault === true : index === 0,
+    }));
   }
 
   getStockTextClass(status: ProductStockStatus): string {
