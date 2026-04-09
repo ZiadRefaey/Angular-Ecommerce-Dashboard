@@ -3,6 +3,7 @@ export const API_ENDPOINTS = {
     login: '/auth/login',
     profile: '/auth/me',
     getCurrentUser: '/auth/getMyProfile',
+    getAllUsers: '/auth/getAlluser',
   },
   categories: {
     base: '/category',

@@ -10,6 +10,12 @@ export interface OrderUserResponse {
   email: string;
 }
 
+export interface OrderMatchedUser {
+  _id: string;
+  fullName: string;
+  email: string;
+}
+
 export interface OrderItemProductResponse {
   _id: string;
   name: string;
@@ -24,7 +30,7 @@ export interface OrderItemResponse {
 
 export interface OrderResponseItem {
   _id: string;
-  user: OrderUserResponse;
+  user: OrderUserResponse | string;
   items: OrderItemResponse[];
   totalPrice: number;
   status: string;
@@ -42,6 +48,7 @@ export interface Order {
   id: string;
   orderId: string;
   fullOrderId: string;
+  customerId: string;
   customerName: string;
   customerEmail: string;
   total: number;

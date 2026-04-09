@@ -24,6 +24,25 @@ interface CurrentUserResponse {
   data: CurrentUser;
 }
 
+interface AppUser {
+  _id: string;
+  role: string;
+  fullName: string;
+  userName: string;
+  age: number;
+  phone: string;
+  email: string;
+  password: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+interface AllUsersResponse {
+  message: string;
+  data: AppUser[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -31,6 +50,7 @@ export class AuthService {
   accessToken = 'token';
   private readonly authApiUrl = `${env.apiBaseUrl}/api${API_ENDPOINTS.auth.login}`;
   private readonly currentUserApiUrl = `${env.apiBaseUrl}/api${API_ENDPOINTS.auth.getCurrentUser}`;
+  private readonly allUsersApiUrl = `${env.apiBaseUrl}/api${API_ENDPOINTS.auth.getAllUsers}`;
   private http = inject(HttpClient);
   router = inject(Router);
   getToken() {
@@ -50,6 +70,9 @@ export class AuthService {
   }
   getCurrentUser() {
     return this.http.get<CurrentUserResponse>(this.currentUserApiUrl);
+  }
+  getAllUsers() {
+    return this.http.get<AllUsersResponse>(this.allUsersApiUrl);
   }
   logout(): void {
     localStorage.removeItem(this.accessToken);

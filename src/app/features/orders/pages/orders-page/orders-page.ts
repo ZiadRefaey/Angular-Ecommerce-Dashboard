@@ -1,6 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import {
   Order,
+  OrderMatchedUser,
   OrderResponseItem,
   OrderStatsCard,
   OrderStatus,
@@ -8,6 +10,7 @@ import {
 } from '../../models/orders.model';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
 import { OrdersService } from '../../../../core/services/orders.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 type OrderSortField = 'total' | 'date' | 'orderId' | 'customerName';
 type SortDirection = 'asc' | 'desc';
@@ -20,21 +23,15 @@ type SortDirection = 'asc' | 'desc';
 })
 export class OrdersPage implements OnInit {
   private readonly ordersService = inject(OrdersService);
+  private readonly authService = inject(AuthService);
 
   columns: DataTableColumn[] = [
     { field: 'orderId', header: 'ORDER ID', width: '14%' },
-    { field: 'customer', header: 'CUSTOMER', width: '28%' },
-    { field: 'total', header: 'TOTAL', width: '12%' },
-    { field: 'orderStatus', header: 'ORDER STATUS', width: '16%' },
-    { field: 'paymentStatus', header: 'PAYMENT STATUS', width: '16%' },
-    { field: 'date', header: 'DATE', width: '10%' },
-    {
-      field: 'actions',
-      header: 'ACTIONS',
-      width: '8%',
-      headerAlign: 'right',
-      bodyAlign: 'right',
-    },
+    { field: 'customer', header: 'CUSTOMER', width: '32%' },
+    { field: 'total', header: 'TOTAL PRICE', width: '14%' },
+    { field: 'paymentStatus', header: 'PAYMENT STATUS', width: '14%' },
+    { field: 'orderStatus', header: 'SHIPPING STATUS', width: '14%' },
+    { field: 'date', header: 'DATE OF ORDER', width: '12%' },
   ];
 
   readonly pageSize = 4;
@@ -223,9 +220,24 @@ export class OrdersPage implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.ordersService.getAllOrders().subscribe({
-      next: (response) => {
-        this.allOrders = response.data.map((order) => this.mapOrder(order));
+    forkJoin({
+      ordersResponse: this.ordersService.getAllOrders(),
+      usersResponse: this.authService.getAllUsers(),
+    }).subscribe({
+      next: ({ ordersResponse, usersResponse }) => {
+        const usersById = usersResponse.data.reduce<Record<string, OrderMatchedUser>>(
+          (accumulator, user) => {
+            accumulator[user._id] = {
+              _id: user._id,
+              fullName: user.fullName,
+              email: user.email,
+            };
+            return accumulator;
+          },
+          {},
+        );
+
+        this.allOrders = ordersResponse.data.map((order) => this.mapOrder(order, usersById));
         this.isLoading = false;
       },
       error: () => {
@@ -235,13 +247,22 @@ export class OrdersPage implements OnInit {
     });
   }
 
-  private mapOrder(order: OrderResponseItem): Order {
+  private mapOrder(
+    order: OrderResponseItem,
+    usersById: Record<string, OrderMatchedUser>,
+  ): Order {
+    const userId = typeof order.user === 'string' ? order.user : order.user._id;
+    const matchedUser = usersById[userId];
+    const fallbackName = typeof order.user === 'string' ? 'Unknown User' : order.user.name;
+    const fallbackEmail = typeof order.user === 'string' ? 'No email available' : order.user.email;
+
     return {
       id: order._id,
       orderId: order._id.slice(0, 5),
       fullOrderId: order._id,
-      customerName: order.user.name,
-      customerEmail: order.user.email,
+      customerId: userId,
+      customerName: matchedUser?.fullName ?? fallbackName,
+      customerEmail: matchedUser?.email ?? fallbackEmail,
       total: order.totalPrice,
       orderStatus: this.mapOrderStatus(order.status),
       paymentStatus: this.mapPaymentStatus(order.paymentStatus),
