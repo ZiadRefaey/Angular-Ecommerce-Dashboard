@@ -1,4 +1,5 @@
 export interface ProductVariation {
+  //defaultVariant:boolean
   colorName: string;
   colorValue: string;
   defaultImg: string;

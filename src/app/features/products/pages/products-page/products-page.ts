@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
 import { ProductStatsCard } from '../../../dashboard/models/product.model';
 import { Product, ProductsResponse } from '../../models/products.model';
@@ -52,6 +51,7 @@ export class ProductsPage implements OnInit {
   ];
 
   allProducts: Product[] = [];
+  allCategories: Category[] = [];
   private readonly categoryNamesById: Record<string, string> = {};
 
   ngOnInit(): void {
@@ -59,10 +59,10 @@ export class ProductsPage implements OnInit {
   }
 
   get categoryOptions(): ProductCategoryOption[] {
-    return [...new Set(this.allProducts.map((product) => product.category))]
-      .map((categoryId) => ({
-        id: categoryId,
-        name: this.getCategoryLabel(categoryId),
+    return this.getUniqueCategories()
+      .map((category) => ({
+        id: category._id,
+        name: category.name,
       }))
       .sort((first, second) => first.name.localeCompare(second.name));
   }
@@ -90,7 +90,7 @@ export class ProductsPage implements OnInit {
         iconClass: 'pi pi-sitemap text-[#9a4dff]',
         iconWrapperClass: 'bg-[#f7f0ff]',
         title: 'CATEGORIES',
-        value: this.categoryOptions.length.toString(),
+        value: this.getUniqueCategories().length.toString(),
       },
       {
         iconClass: 'pi pi-wallet text-[#17b26a]',
@@ -151,10 +151,15 @@ export class ProductsPage implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.productsService.getProducts().subscribe({
-      next: (response: ProductsResponse) => {
-        this.allProducts = response.data;
-        this.loadCategoryNames();
+    forkJoin({
+      productsResponse: this.productsService.getProducts(),
+      categoriesResponse: this.categoriesService.getCategories(),
+    }).subscribe({
+      next: ({ productsResponse, categoriesResponse }) => {
+        this.allProducts = productsResponse.data;
+        this.allCategories = categoriesResponse.data;
+        this.buildCategoryNamesMap();
+        this.isLoading = false;
       },
       error: () => {
         this.errorMessage = 'Unable to load products right now. Please try again.';
@@ -251,36 +256,26 @@ export class ProductsPage implements OnInit {
     this.currentPage = 1;
   }
 
-  loadCategoryNames(): void {
-    const uniqueCategoryIds = [...new Set(this.allProducts.map((product) => product.category))];
-
-    if (!uniqueCategoryIds.length) {
-      this.isLoading = false;
-      return;
-    }
-
-    const categoryRequests = uniqueCategoryIds.map((categoryId) =>
-      this.categoriesService
-        .getCategoryById(categoryId)
-        .pipe(catchError(() => of({ message: 'error', data: [] as Category[] }))),
-    );
-
-    forkJoin(categoryRequests).subscribe({
-      next: (responses) => {
-        responses.forEach((response, index) => {
-          const category = response.data[0];
-
-          if (category) {
-            this.categoryNamesById[uniqueCategoryIds[index]] = category.name;
-          }
-        });
-
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      },
+  private buildCategoryNamesMap(): void {
+    this.getUniqueCategories().forEach((category) => {
+      const fallbackId = category.name.trim().toLowerCase();
+      this.categoryNamesById[category._id || fallbackId] = category.name;
     });
+  }
+
+  private getUniqueCategories(): Category[] {
+    const uniqueCategories = new Map<string, Category>();
+
+    this.allCategories.forEach((category) => {
+      const fallbackId = category.name.trim().toLowerCase();
+      const key = category._id || fallbackId;
+
+      if (!uniqueCategories.has(key)) {
+        uniqueCategories.set(key, category);
+      }
+    });
+
+    return [...uniqueCategories.values()];
   }
 
   getStockTextClass(status: ProductStockStatus): string {

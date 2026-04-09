@@ -6,10 +6,10 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { CategoriesService } from '../../../../core/services/categories.service';
-import { ProductsService } from '../../../../core/services/products.service';
 import { IProductCategoryOption } from '../../models/edit-product-model';
+import { Category } from '../../../categories/models/categories.model';
 
 type CreateProductForm = FormGroup<{
   name: FormControl<string>;
@@ -39,7 +39,6 @@ export class CreateProduct implements OnInit, OnDestroy {
   @Output() closed = new EventEmitter<void>();
 
   private readonly fb = inject(FormBuilder);
-  private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
 
   readonly productForm: CreateProductForm = this.fb.group({
@@ -186,16 +185,15 @@ export class CreateProduct implements OnInit, OnDestroy {
     this.isLoadingCategories = true;
     this.categoriesErrorMessage = '';
 
-    this.productsService
-      .getProducts()
+    this.categoriesService
+      .getCategories()
       .pipe(
-        map((response) => response.data.map((product) => product.category)),
-        switchMap((categoryIds) => this.categoriesService.getCategoriesByIds(categoryIds)),
-        map((categories) =>
-          categories
+        map((response) => this.buildUniqueCategoryOptions(response.data)),
+        map((categoryOptions) =>
+          categoryOptions
             .map((category) => ({
               label: category.name,
-              value: category._id,
+              value: category.id,
             }))
             .sort((first, second) => first.label.localeCompare(second.label)),
         ),
@@ -208,6 +206,24 @@ export class CreateProduct implements OnInit, OnDestroy {
         this.categoryOptions = categoryOptions;
         this.isLoadingCategories = false;
       });
+  }
+
+  private buildUniqueCategoryOptions(categories: Category[]): Array<{ id: string; name: string }> {
+    const uniqueCategories = new Map<string, { id: string; name: string }>();
+
+    categories.forEach((category) => {
+      const fallbackId = category.name.trim().toLowerCase();
+      const key = category._id || fallbackId;
+
+      if (!uniqueCategories.has(key)) {
+        uniqueCategories.set(key, {
+          id: category._id || fallbackId,
+          name: category.name,
+        });
+      }
+    });
+
+    return [...uniqueCategories.values()];
   }
 
   private createPreviewUrl(file: File): string {
