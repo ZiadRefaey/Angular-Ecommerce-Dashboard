@@ -11,6 +11,7 @@ import { CategoriesPagination } from './components/categories-pagination/categor
 import { CategoriesPageHeader } from './components/categories-page-header/categories-page-header';
 import { CategoriesStatsCardsSection } from './components/categories-stats-cards-section/categories-stats-cards-section';
 import { CategoriesTable } from './components/categories-table/categories-table';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,6 @@ import { CategoriesTable } from './components/categories-table/categories-table'
     CategoriesTable,
     CategoriesPagination,
   ],
-  imports: [CommonModule, CategoriesRoutingModule, SharedModule, FormsModule],
+  imports: [CommonModule, CategoriesRoutingModule, SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class CategoriesModule {}

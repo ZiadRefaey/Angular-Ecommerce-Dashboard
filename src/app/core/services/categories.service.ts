@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { forkJoin, map, Observable, of } from 'rxjs';
 import { env } from '../../../enviroment/.env';
-import { Category, CategoriesResponse } from '../../features/categories/models/categories.model';
+import {
+  Category,
+  CategoriesResponse,
+  CreateCategoryPayload,
+} from '../../features/categories/models/categories.model';
 import { API_ENDPOINTS } from '../Constants/api-endpoints';
 
 @Injectable({
@@ -15,6 +19,13 @@ export class CategoriesService {
   getCategories(): Observable<CategoriesResponse> {
     return this.http.get<CategoriesResponse>(
       `${this.categoriesUrl}${API_ENDPOINTS.categories.getAll}`,
+    );
+  }
+
+  createCategory(payload: CreateCategoryPayload): Observable<CategoriesResponse> {
+    return this.http.post<CategoriesResponse>(
+      `${this.categoriesUrl}${API_ENDPOINTS.categories.createCategory}`,
+      payload,
     );
   }
 

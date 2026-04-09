@@ -46,6 +46,7 @@
   </div>
   <app-create-category
     [isOpen]="isCreateCategoryModalOpen"
+    (created)="refreshCategories()"
     (closed)="closeCreateCategoryModal()"
   ></app-create-category>
 </section>

@@ -9,6 +9,10 @@ export interface CategoriesResponse {
   data: Category[];
 }
 
+export interface CreateCategoryPayload {
+  name: string;
+}
+
 export interface CategoryListItem {
   id: string;
   name: string;

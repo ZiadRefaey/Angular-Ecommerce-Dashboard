@@ -185,6 +185,11 @@ export class CategoriesPage implements OnInit {
     this.currentPage = 1;
   }
 
+  refreshCategories(): void {
+    this.resetPagination();
+    this.loadCategories();
+  }
+
   private loadCategories(): void {
     this.isLoading = true;
     this.errorMessage = '';
