@@ -4,9 +4,44 @@ export type OrderStatus = 'Delivered' | 'Confirmed' | 'Pending' | 'Shipped' | 'C
 
 export type PaymentStatus = 'Paid' | 'Unpaid';
 
+export interface OrderUserResponse {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+export interface OrderItemProductResponse {
+  _id: string;
+  name: string;
+  price: number;
+}
+
+export interface OrderItemResponse {
+  product: OrderItemProductResponse;
+  quantity: number;
+  variationId: string;
+}
+
+export interface OrderResponseItem {
+  _id: string;
+  user: OrderUserResponse;
+  items: OrderItemResponse[];
+  totalPrice: number;
+  status: string;
+  paymentStatus: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrdersResponse {
+  message: string;
+  data: OrderResponseItem[];
+}
+
 export interface Order {
-  id: string | number;
+  id: string;
   orderId: string;
+  fullOrderId: string;
   customerName: string;
   customerEmail: string;
   total: number;

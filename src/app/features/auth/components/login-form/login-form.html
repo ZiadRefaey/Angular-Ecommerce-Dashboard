@@ -82,14 +82,15 @@
       [disabled]="isSubmitting"
       class="mt-2 flex w-full items-center justify-center rounded-[10px] py-3 text-[14px] font-semibold text-white shadow-[0_6px_20px_rgba(29,78,216,0.3)] transition"
       [ngClass]="isSubmitting ? 'cursor-not-allowed bg-[#7ea6ff]' : 'bg-[#1d4ed8] hover:opacity-95'"
-      [ngClass]="loginFail == false ? 'bg-green-400' : ' bg-[#1d4ed8]'"
+      [class.bg-green-500]="loginSuccess"
+      [class.hover:bg-green-500]="loginSuccess"
     >
       @if (isSubmitting) {
         <span class="flex items-center gap-2">
           <i class="pi pi-spin pi-spinner text-[14px]"></i>
           Signing In...
         </span>
-      } @else if (loginFail == false) {
+      } @else if (loginSuccess) {
         <span class="flex items-center gap-2">
           Signin Successful!
           <i class="pi pi-check text-[14px]"></i>

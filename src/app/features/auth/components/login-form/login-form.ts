@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { switchMap } from 'rxjs';
 
 type LoginFormType = FormGroup<{
   email: FormControl<string>;
@@ -20,6 +21,7 @@ export class LoginForm {
   showPassword = false;
   isSubmitting = false;
   loginFail: null | boolean = null;
+  loginSuccess = false;
   serverErrMessage = '';
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -52,28 +54,44 @@ export class LoginForm {
     }
 
     this.isSubmitting = true;
-    console.log(this.form.getRawValue());
+    this.loginFail = null;
+    this.loginSuccess = false;
+    this.serverErrMessage = '';
+
     this.authService
       .login({
         email,
         password,
       })
-      .subscribe({
-        next: (res: any) => {
-          console.log(res.data.accessToken);
+      .pipe(
+        switchMap((res: any) => {
           this.authService.setToken(res.data.accessToken);
+          return this.authService.getCurrentUser();
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.data.role?.toLowerCase() !== 'admin') {
+            this.authService.logout();
+            this.loginFail = true;
+            this.serverErrMessage = 'This dashboard is only available for admin accounts.';
+            this.isSubmitting = false;
+            return;
+          }
+
+          this.loginSuccess = true;
           setTimeout(() => {
             this.router.navigate(['/dashboard']);
           }, 1000);
         },
         error: (err) => {
           this.loginFail = true;
-          this.serverErrMessage = err.error.error;
+          this.loginSuccess = false;
+          this.serverErrMessage = err.error?.error || err.error?.message || 'Unable to sign in right now.';
           this.isSubmitting = false;
         },
         complete: () => {
           this.isSubmitting = false;
-          this.loginFail = false;
         },
       });
   }

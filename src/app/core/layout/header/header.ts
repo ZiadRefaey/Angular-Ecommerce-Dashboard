@@ -12,6 +12,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Subject, of, switchMap, takeUntil, tap, catchError, map, filter } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { Product } from '../../../features/products/models/products.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -21,6 +22,7 @@ import { Product } from '../../../features/products/models/products.model';
 })
 export class Header implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   private readonly destroy$ = new Subject<void>();
@@ -33,9 +35,26 @@ export class Header implements OnInit, OnDestroy {
   isDropdownOpen = false;
   isMobileSearchOpen = false;
   errorMessage = '';
+  currentUserFirstName = '';
+  currentUserRole = '';
+  currentUserInitial = '';
   @Output() sidebarToggle = new EventEmitter<void>();
 
   ngOnInit(): void {
+    this.authService.getCurrentUser().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response) => {
+        const fullName = response.data.fullName.trim();
+        this.currentUserFirstName = this.getFirstName(fullName);
+        this.currentUserRole = response.data.role;
+        this.currentUserInitial = this.getInitial(this.currentUserFirstName);
+      },
+      error: () => {
+        this.currentUserFirstName = '';
+        this.currentUserRole = '';
+        this.currentUserInitial = '';
+      },
+    });
+
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -184,5 +203,13 @@ export class Header implements OnInit, OnDestroy {
     }
 
     return 3;
+  }
+
+  private getFirstName(fullName: string): string {
+    return fullName.split(/\s+/).filter(Boolean)[0] ?? '';
+  }
+
+  private getInitial(name: string): string {
+    return name.charAt(0).toUpperCase() || '';
   }
 }

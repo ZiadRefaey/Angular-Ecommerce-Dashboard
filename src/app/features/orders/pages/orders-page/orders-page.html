@@ -5,38 +5,48 @@
     <app-order-stats-cards class="mt-7" [statsCards]="statsCards"></app-order-stats-cards>
 
     <div class="mt-7 overflow-hidden rounded-[14px] border border-[#dde5ef] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
-      <app-orders-table-filters
-        [searchTerm]="searchTerm"
-        [selectedOrderStatus]="selectedOrderStatus"
-        [selectedPaymentStatus]="selectedPaymentStatus"
-        [selectedSortField]="selectedSortField"
-        [selectedSortDirection]="selectedSortDirection"
-        [orderStatusOptions]="orderStatusOptions"
-        [paymentStatusOptions]="paymentStatusOptions"
-        [sortFields]="sortFields"
-        (searchTermChange)="updateSearchTerm($event)"
-        (selectedOrderStatusChange)="updateSelectedOrderStatus($event)"
-        (selectedPaymentStatusChange)="updateSelectedPaymentStatus($event)"
-        (selectedSortFieldChange)="updateSelectedSortField($event)"
-        (selectedSortDirectionChange)="updateSelectedSortDirection($event)"
-      ></app-orders-table-filters>
+      @if (isLoading) {
+        <div class="flex min-h-80 items-center justify-center px-6 py-10">
+          <app-loading-spinner></app-loading-spinner>
+        </div>
+      } @else if (errorMessage) {
+        <div class="px-6 py-8 text-center text-[14px] font-medium text-[#f04438]">
+          {{ errorMessage }}
+        </div>
+      } @else {
+        <app-orders-table-filters
+          [searchTerm]="searchTerm"
+          [selectedOrderStatus]="selectedOrderStatus"
+          [selectedPaymentStatus]="selectedPaymentStatus"
+          [selectedSortField]="selectedSortField"
+          [selectedSortDirection]="selectedSortDirection"
+          [orderStatusOptions]="orderStatusOptions"
+          [paymentStatusOptions]="paymentStatusOptions"
+          [sortFields]="sortFields"
+          (searchTermChange)="updateSearchTerm($event)"
+          (selectedOrderStatusChange)="updateSelectedOrderStatus($event)"
+          (selectedPaymentStatusChange)="updateSelectedPaymentStatus($event)"
+          (selectedSortFieldChange)="updateSelectedSortField($event)"
+          (selectedSortDirectionChange)="updateSelectedSortDirection($event)"
+        ></app-orders-table-filters>
 
-      <app-orders-table
-        [orders]="paginatedOrders"
-        [columns]="columns"
-        [showingFrom]="showingFrom"
-        [showingTo]="showingTo"
-        [totalItems]="filteredAndSortedOrders.length"
-      ></app-orders-table>
+        <app-orders-table
+          [orders]="paginatedOrders"
+          [columns]="columns"
+          [showingFrom]="showingFrom"
+          [showingTo]="showingTo"
+          [totalItems]="filteredAndSortedOrders.length"
+        ></app-orders-table>
 
-      <app-orders-pagination
-        [currentPage]="currentPage"
-        [totalPages]="totalPages"
-        [pageNumbers]="pageNumbers"
-        (previousPage)="goToPreviousPage()"
-        (nextPage)="goToNextPage()"
-        (pageChange)="goToPage($event)"
-      ></app-orders-pagination>
+        <app-orders-pagination
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          [pageNumbers]="pageNumbers"
+          (previousPage)="goToPreviousPage()"
+          (nextPage)="goToNextPage()"
+          (pageChange)="goToPage($event)"
+        ></app-orders-pagination>
+      }
     </div>
   </div>
 </section>

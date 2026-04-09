@@ -2,6 +2,7 @@ export const API_ENDPOINTS = {
   auth: {
     login: '/auth/login',
     profile: '/auth/me',
+    getCurrentUser: '/auth/getMyProfile',
   },
   categories: {
     base: '/category',
@@ -18,5 +19,6 @@ export const API_ENDPOINTS = {
   },
   orders: {
     base: '/order',
+    getAll: '/getAllOrders',
   },
 } as const;

@@ -1,6 +1,13 @@
-import { Component } from '@angular/core';
-import { Order, OrderStatsCard, OrderStatus, PaymentStatus } from '../../models/orders.model';
+import { Component, OnInit, inject } from '@angular/core';
+import {
+  Order,
+  OrderResponseItem,
+  OrderStatsCard,
+  OrderStatus,
+  PaymentStatus,
+} from '../../models/orders.model';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
+import { OrdersService } from '../../../../core/services/orders.service';
 
 type OrderSortField = 'total' | 'date' | 'orderId' | 'customerName';
 type SortDirection = 'asc' | 'desc';
@@ -11,7 +18,9 @@ type SortDirection = 'asc' | 'desc';
   templateUrl: './orders-page.html',
   styleUrl: './orders-page.css',
 })
-export class OrdersPage {
+export class OrdersPage implements OnInit {
+  private readonly ordersService = inject(OrdersService);
+
   columns: DataTableColumn[] = [
     { field: 'orderId', header: 'ORDER ID', width: '14%' },
     { field: 'customer', header: 'CUSTOMER', width: '28%' },
@@ -51,109 +60,14 @@ export class OrdersPage {
   selectedSortField: OrderSortField = 'date';
   selectedSortDirection: SortDirection = 'desc';
   currentPage = 1;
+  isLoading = true;
+  errorMessage = '';
 
-  allOrders: Order[] = [
-    {
-      id: 1,
-      orderId: '#ORD-001',
-      customerName: 'Sarah Johnson',
-      customerEmail: 'sarah.johnson@example.com',
-      total: 249.99,
-      orderStatus: 'Delivered',
-      paymentStatus: 'Paid',
-      date: '2026-03-24',
-    },
-    {
-      id: 2,
-      orderId: '#ORD-002',
-      customerName: 'Michael Chen',
-      customerEmail: 'michael.chen@example.com',
-      total: 129.5,
-      orderStatus: 'Confirmed',
-      paymentStatus: 'Paid',
-      date: '2026-03-24',
-    },
-    {
-      id: 3,
-      orderId: '#ORD-003',
-      customerName: 'Emily Davis',
-      customerEmail: 'emily.davis@example.com',
-      total: 89.0,
-      orderStatus: 'Pending',
-      paymentStatus: 'Unpaid',
-      date: '2026-03-23',
-    },
-    {
-      id: 4,
-      orderId: '#ORD-004',
-      customerName: 'James Wilson',
-      customerEmail: 'james.wilson@example.com',
-      total: 459.0,
-      orderStatus: 'Shipped',
-      paymentStatus: 'Paid',
-      date: '2026-03-23',
-    },
-    {
-      id: 5,
-      orderId: '#ORD-005',
-      customerName: 'Olivia Martinez',
-      customerEmail: 'olivia.martinez@example.com',
-      total: 199.99,
-      orderStatus: 'Cancelled',
-      paymentStatus: 'Unpaid',
-      date: '2026-03-22',
-    },
-    {
-      id: 6,
-      orderId: '#ORD-006',
-      customerName: 'Daniel Brown',
-      customerEmail: 'daniel.brown@example.com',
-      total: 320.0,
-      orderStatus: 'Delivered',
-      paymentStatus: 'Paid',
-      date: '2026-03-22',
-    },
-    {
-      id: 7,
-      orderId: '#ORD-007',
-      customerName: 'Ava Thompson',
-      customerEmail: 'ava.thompson@example.com',
-      total: 78.4,
-      orderStatus: 'Pending',
-      paymentStatus: 'Unpaid',
-      date: '2026-03-21',
-    },
-    {
-      id: 8,
-      orderId: '#ORD-008',
-      customerName: 'Noah Garcia',
-      customerEmail: 'noah.garcia@example.com',
-      total: 615.2,
-      orderStatus: 'Delivered',
-      paymentStatus: 'Paid',
-      date: '2026-03-21',
-    },
-    {
-      id: 9,
-      orderId: '#ORD-009',
-      customerName: 'Sophia Lee',
-      customerEmail: 'sophia.lee@example.com',
-      total: 142.75,
-      orderStatus: 'Confirmed',
-      paymentStatus: 'Paid',
-      date: '2026-03-20',
-    },
-    {
-      id: 10,
-      orderId: '#ORD-010',
-      customerName: 'William Anderson',
-      customerEmail: 'william.anderson@example.com',
-      total: 980.0,
-      orderStatus: 'Shipped',
-      paymentStatus: 'Paid',
-      date: '2026-03-19',
-    },
-  ];
+  allOrders: Order[] = [];
+
+  ngOnInit(): void {
+    this.loadOrders();
+  }
 
   get statsCards(): OrderStatsCard[] {
     const pendingOrders = this.allOrders.filter((order) => order.orderStatus === 'Pending').length;
@@ -187,7 +101,7 @@ export class OrdersPage {
         title: 'TOTAL REVENUE',
         value: new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'EGP',
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         }).format(totalRevenue),
@@ -303,5 +217,55 @@ export class OrdersPage {
 
   private resetPagination(): void {
     this.currentPage = 1;
+  }
+
+  private loadOrders(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.ordersService.getAllOrders().subscribe({
+      next: (response) => {
+        this.allOrders = response.data.map((order) => this.mapOrder(order));
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load orders right now. Please try again.';
+        this.isLoading = false;
+      },
+    });
+  }
+
+  private mapOrder(order: OrderResponseItem): Order {
+    return {
+      id: order._id,
+      orderId: order._id.slice(0, 5),
+      fullOrderId: order._id,
+      customerName: order.user.name,
+      customerEmail: order.user.email,
+      total: order.totalPrice,
+      orderStatus: this.mapOrderStatus(order.status),
+      paymentStatus: this.mapPaymentStatus(order.paymentStatus),
+      date: order.createdAt,
+    };
+  }
+
+  private mapOrderStatus(status: string): OrderStatus {
+    switch (status.trim().toLowerCase()) {
+      case 'delivered':
+        return 'Delivered';
+      case 'confirmed':
+        return 'Confirmed';
+      case 'shipped':
+        return 'Shipped';
+      case 'cancelled':
+        return 'Cancelled';
+      case 'pending':
+      default:
+        return 'Pending';
+    }
+  }
+
+  private mapPaymentStatus(status: string): PaymentStatus {
+    return status.trim().toLowerCase() === 'paid' ? 'Paid' : 'Unpaid';
   }
 }
