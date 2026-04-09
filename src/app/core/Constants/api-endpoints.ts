@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
     getAll: '/getAllProducts',
     getById: '/getProductById',
     createProduct: '/createProduct',
+    updateProduct: '/updateProduct',
   },
   orders: {
     base: '/order',

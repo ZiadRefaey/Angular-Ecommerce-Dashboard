@@ -24,31 +24,57 @@
           }
         </div>
 
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+        <div class="grid grid-cols-3 gap-3">
           @for (image of variation.media; track image.id) {
             <div
-              class="group relative overflow-hidden rounded-[10px] border transition"
+              class="group relative overflow-hidden rounded-[12px] border transition"
               [ngClass]="
-                image.isDefault ? 'border-[#2f6bff] ring-1 ring-[#2f6bff]' : 'border-[#e4e7ec]'
+                image.isDefault
+                  ? 'border-[#2f6bff] ring-2 ring-[#2f6bff] shadow-[0_0_0_4px_rgba(47,107,255,0.12)]'
+                  : 'border-[#e4e7ec]'
               "
             >
-              <button type="button" class="block h-14 w-full" (click)="selectMedia.emit(image.id)">
+              <button type="button" class="relative block h-24 w-full overflow-hidden" (click)="selectMedia.emit(image.id)">
                 <img
                   [src]="image.image"
                   [alt]="variation.name"
-                  class="h-full w-full object-cover"
+                  class="h-full w-full object-cover transition duration-200 group-hover:scale-105"
                 />
+                <div class="absolute inset-0 bg-[#101828]/0 transition group-hover:bg-[#101828]/35"></div>
+
+                @if (image.isDefault) {
+                  <div class="absolute bottom-1.5 left-1/2 inline-flex max-w-[calc(100%-0.75rem)] -translate-x-1/2 items-center rounded-full bg-[#2f6bff] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.06em] text-white shadow-sm">
+                    <span>Default</span>
+                  </div>
+                }
               </button>
 
-              @if (canDeleteMedia) {
-                <button
-                  type="button"
-                  class="absolute right-0.5 top-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition group-hover:opacity-100"
-                  (click)="deleteMedia.emit(image.id)"
+              <div class="absolute left-2 top-2 z-10 flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                <label
+                  [for]="'replaceMediaInput-' + image.id"
+                  class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/65 text-white transition hover:bg-[#2f6bff]"
                 >
-                  <i class="pi pi-trash text-[2px]"></i>
-                </button>
-              }
+                  <i class="pi pi-pencil text-[11px]"></i>
+                </label>
+
+                <input
+                  [id]="'replaceMediaInput-' + image.id"
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  (change)="onReplaceInput(image.id, $event)"
+                />
+
+                @if (canDeleteMedia) {
+                  <button
+                    type="button"
+                    class="flex h-7 w-7 items-center justify-center rounded-full bg-black/65 text-white transition hover:bg-[#f04438]"
+                    (click)="deleteMedia.emit(image.id)"
+                  >
+                    <i class="pi pi-trash text-[11px]"></i>
+                  </button>
+                }
+              </div>
             </div>
           }
         </div>

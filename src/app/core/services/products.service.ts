@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from '../Constants/api-endpoints';
 import {
   CreateProductResponse,
   Product,
+  ProductByIdResponse,
   ProductsResponse,
 } from '../../features/products/models/products.model';
 
@@ -20,8 +21,8 @@ export class ProductsService {
     return this.http.get<ProductsResponse>(`${this.productsUrl}${API_ENDPOINTS.products.getAll}`);
   }
 
-  getProductById(productId: string): Observable<Product> {
-    return this.http.get<Product>(
+  getProductById(productId: string): Observable<ProductByIdResponse> {
+    return this.http.get<ProductByIdResponse>(
       `${this.productsUrl}${API_ENDPOINTS.products.getById}/${productId}`,
     );
   }
@@ -29,6 +30,16 @@ export class ProductsService {
   addProduct(payload: FormData): Observable<CreateProductResponse> {
     return this.http.post<CreateProductResponse>(
       `${this.productsUrl}${API_ENDPOINTS.products.createProduct}`,
+      payload,
+    );
+  }
+
+  updateProductById(
+    productId: string,
+    payload: FormData,
+  ): Observable<CreateProductResponse> {
+    return this.http.patch<CreateProductResponse>(
+      `${this.productsUrl}${API_ENDPOINTS.products.updateProduct}/${productId}`,
       payload,
     );
   }

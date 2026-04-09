@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ProductsService } from '../../../../core/services/products.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   AbstractControl,
   FormArray,
@@ -17,6 +16,12 @@ import {
   IProductVariation,
 } from '../../models/edit-product-model';
 import { PRODUCT_COLORS } from '../../../../core/Constants/PRODUCT_COLORS';
+import { ProductsService } from '../../../../core/services/products.service';
+import { CategoriesService } from '../../../../core/services/categories.service';
+import {
+  Product,
+  ProductVariation,
+} from '../../models/products.model';
 
 const DEFAULT_PRODUCT_IMAGE = '/product-media.jpg';
 const POSITIVE_NUMBER_PATTERN = /^[1-9]\d*(\.\d+)?$/;
@@ -74,93 +79,62 @@ type ProductForm = FormGroup<{
   styleUrl: './edit-product-page.css',
 })
 export class EditProductPage implements OnInit {
+  private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly productsService = inject(ProductsService);
-  productForm: ProductForm;
+  private readonly categoriesService = inject(CategoriesService);
+
+  productForm: ProductForm = this.fb.group({
+    basicInfo: this.fb.group({
+      productName: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
+      description: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(6)]),
+      category: this.fb.nonNullable.control('', [Validators.required]),
+      price: this.fb.nonNullable.control('', [
+        Validators.required,
+        Validators.pattern(POSITIVE_NUMBER_PATTERN),
+      ]),
+    }) as BasicInfoForm,
+    variations: this.fb.array<VariationForm>([], { validators: [minimumVariations(1)] }),
+    publishing: this.fb.group({
+      visibility: this.fb.nonNullable.control(true),
+      featured: this.fb.nonNullable.control(false),
+      publishedDate: this.fb.nonNullable.control(''),
+    }) as PublishingForm,
+  });
+
   saveAttempted = false;
+  isPageLoading = true;
+  isSaving = false;
+  isDeleting = false;
+  errorMessage = '';
+  saveErrorMessage = '';
+  deleteErrorMessage = '';
 
   confirmDeleteVariationOpen = false;
   pendingDeleteVariationId: string | null = null;
 
-  categories: IProductCategoryOption[] = [
-    { label: 'Monitors', value: 'monitors' },
-    { label: 'Laptops', value: 'laptops' },
-    { label: 'Audio', value: 'audio' },
-    { label: 'Gaming', value: 'gaming' },
-  ];
-
-  activeVariationId = 'var-black';
+  categories: IProductCategoryOption[] = [];
+  activeVariationId = '';
+  productId = '';
+  originalProduct: Product | null = null;
 
   confirmDeleteOpen = false;
   pendingDeleteImageId: string | null = null;
 
-  ngOnInit(): void {
-    const productId = this.route.snapshot.paramMap.get('id');
+  confirmDeleteProductOpen = false;
 
-    if (!productId) {
+  ngOnInit(): void {
+    this.productId = this.route.snapshot.paramMap.get('id') ?? '';
+
+    if (!this.productId) {
+      this.errorMessage = 'Unable to find this product.';
+      this.isPageLoading = false;
       return;
     }
 
-    this.productsService.getProductById(productId).subscribe({
-      next: (product) => {
-        console.log(product);
-      },
-      error: (error) => {
-        console.error(error);
-      },
-    });
-  }
-
-  constructor(private fb: FormBuilder) {
-    this.productForm = this.fb.group({
-      basicInfo: this.fb.group({
-        productName: this.fb.nonNullable.control('UltraVision Pro 4K Monitor', [
-          Validators.required,
-          Validators.minLength(3),
-        ]),
-        description: this.fb.nonNullable.control(
-          'The UltraVision Pro 4K Monitor delivers stunning visual clarity with 3840 × 2160 resolution. Featuring HDR10 support, 99% sRGB color gamut coverage, and a sleek edge-to-edge design. Perfect for creative professionals and high-end workstations.',
-          [Validators.required, Validators.minLength(6)],
-        ),
-        category: this.fb.nonNullable.control('monitors', [Validators.required]),
-        price: this.fb.nonNullable.control('12499.99', [
-          Validators.required,
-          Validators.pattern(POSITIVE_NUMBER_PATTERN),
-        ]),
-      }),
-      variations: this.fb.array(
-        [
-          this.createVariationForm({
-            id: 'var-black',
-            name: 'Black',
-            colorName: 'Black',
-            colorHex: '#000000',
-            stock: 30,
-            stockInput: '30',
-            image: DEFAULT_PRODUCT_IMAGE,
-            isDefault: true,
-            media: [this.createDefaultMediaItem('var-black')],
-          }),
-          this.createVariationForm({
-            id: 'var-grey',
-            name: 'Gray',
-            colorName: 'Gray',
-            colorHex: '#9CA3AF',
-            stock: 15,
-            stockInput: '15',
-            image: DEFAULT_PRODUCT_IMAGE,
-            isDefault: false,
-            media: [this.createDefaultMediaItem('var-grey')],
-          }),
-        ],
-        { validators: [minimumVariations(1)] },
-      ),
-      publishing: this.fb.group({
-        visibility: this.fb.nonNullable.control(true),
-        featured: this.fb.nonNullable.control(false),
-        publishedDate: this.fb.nonNullable.control('Aug 24, 2024'),
-      }),
-    });
+    this.loadCategories();
+    this.loadProduct();
   }
 
   get basicInfoForm(): BasicInfoForm {
@@ -195,21 +169,46 @@ export class EditProductPage implements OnInit {
   }
 
   onCancel(): void {
-    console.log('Cancel edit');
+    if (!this.originalProduct) {
+      return;
+    }
+
+    this.saveAttempted = false;
+    this.saveErrorMessage = '';
+    this.deleteErrorMessage = '';
+    this.closeDeleteVariationModal();
+    this.closeDeleteModal();
+    this.closeDeleteProductModal();
+    this.populateForm(this.originalProduct);
   }
 
   onSave(): void {
     this.saveAttempted = true;
+    this.saveErrorMessage = '';
 
-    if (this.productForm.invalid) {
+    if (this.productForm.invalid || !this.productId || this.isSaving) {
       this.productForm.markAllAsTouched();
       return;
     }
 
-    console.log('Save product', {
-      basicInfo: this.basicInfoForm.getRawValue(),
-      publishing: this.publishingForm.getRawValue(),
-      variations: this.variations,
+    const payload = this.buildUpdateFormData(false);
+
+    if (!payload) {
+      this.saveErrorMessage = 'Unable to prepare this product right now.';
+      return;
+    }
+
+    this.isSaving = true;
+
+    this.productsService.updateProductById(this.productId, payload).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.loadProduct();
+      },
+      error: () => {
+        this.isSaving = false;
+        this.saveErrorMessage = 'Unable to save product right now. Please try again.';
+      },
     });
   }
 
@@ -238,7 +237,7 @@ export class EditProductPage implements OnInit {
         stock: Number.NaN,
         stockInput: '',
         image: DEFAULT_PRODUCT_IMAGE,
-        isDefault: false,
+        isDefault: this.variationsArray.length === 0,
         media: [this.createDefaultMediaItem(nextId)],
       }),
     );
@@ -264,6 +263,34 @@ export class EditProductPage implements OnInit {
     activeVariationForm.patchValue({
       image: nextMedia.image,
       media: [...normalizedMedia, nextMedia],
+    });
+
+    input.value = '';
+  }
+
+  onMediaReplace(imageId: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    const activeVariationForm = this.findVariationForm(this.activeVariationId);
+
+    if (!file || !activeVariationForm) {
+      return;
+    }
+
+    const currentMedia = activeVariationForm.controls.media.value;
+    const targetMedia = currentMedia.find((item) => item.id === imageId);
+
+    if (!targetMedia) {
+      input.value = '';
+      return;
+    }
+
+    const nextMedia = this.createUploadedMediaItem(file, imageId, targetMedia.isDefault === true);
+    const updatedMedia = currentMedia.map((item) => (item.id === imageId ? nextMedia : item));
+
+    activeVariationForm.patchValue({
+      image: nextMedia.isDefault ? nextMedia.image : activeVariationForm.controls.image.value,
+      media: updatedMedia,
     });
 
     input.value = '';
@@ -377,11 +404,338 @@ export class EditProductPage implements OnInit {
     this.closeDeleteVariationModal();
   }
 
+  openDeleteProductModal(): void {
+    this.deleteErrorMessage = '';
+    this.confirmDeleteProductOpen = true;
+  }
+
+  closeDeleteProductModal(): void {
+    this.confirmDeleteProductOpen = false;
+  }
+
+  confirmDeleteProduct(): void {
+    if (!this.productId || !this.originalProduct || this.isDeleting) {
+      return;
+    }
+
+    const payload = this.buildOriginalProductDeleteFormData(this.originalProduct, true);
+    this.isDeleting = true;
+    this.deleteErrorMessage = '';
+
+    this.productsService.updateProductById(this.productId, payload).subscribe({
+      next: () => {
+        this.isDeleting = false;
+        this.confirmDeleteProductOpen = false;
+        this.router.navigate(['/products']);
+      },
+      error: () => {
+        this.isDeleting = false;
+        this.deleteErrorMessage = 'Unable to delete product right now. Please try again.';
+      },
+    });
+  }
+
+  private loadCategories(): void {
+    this.categoriesService.getCategories().subscribe({
+      next: (response) => {
+        const uniqueCategories = new Map<string, IProductCategoryOption>();
+
+        response.data.forEach((category) => {
+          const fallbackId = category.name.trim().toLowerCase();
+          const key = category._id || fallbackId;
+
+          if (!uniqueCategories.has(key)) {
+            uniqueCategories.set(key, {
+              label: category.name,
+              value: category._id || fallbackId,
+            });
+          }
+        });
+
+        this.categories = [...uniqueCategories.values()].sort((first, second) =>
+          first.label.localeCompare(second.label),
+        );
+      },
+      error: () => {
+        this.categories = [];
+      },
+    });
+  }
+
+  private loadProduct(): void {
+    if (!this.productId) {
+      return;
+    }
+
+    this.isPageLoading = true;
+    this.errorMessage = '';
+    this.saveErrorMessage = '';
+
+    this.productsService.getProductById(this.productId).subscribe({
+      next: (response) => {
+        const product = response.data[0];
+
+        if (!product) {
+          this.errorMessage = 'Unable to find this product.';
+          this.isPageLoading = false;
+          return;
+        }
+
+        this.originalProduct = product;
+        this.populateForm(product);
+        this.isPageLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load product right now. Please try again.';
+        this.isPageLoading = false;
+      },
+    });
+  }
+
+  private populateForm(product: Product): void {
+    const normalizedVariations = this.mapProductVariations(product);
+
+    this.basicInfoForm.patchValue({
+      productName: product.name,
+      description: product.description,
+      category: product.category,
+      price: product.price.toString(),
+    });
+
+    this.publishingForm.patchValue({
+      visibility: product.visible,
+      featured: product.featured,
+      publishedDate: this.formatPublishedDate(product.createdAt),
+    });
+
+    this.setVariations(normalizedVariations);
+    this.activeVariationId =
+      normalizedVariations.find((variation) => variation.isDefault)?.id ?? normalizedVariations[0]?.id ?? '';
+    this.saveAttempted = false;
+    this.productForm.markAsPristine();
+    this.productForm.markAsUntouched();
+  }
+
+  private setVariations(variations: IProductVariation[]): void {
+    this.variationsArray.clear();
+
+    variations.forEach((variation) => {
+      this.variationsArray.push(this.createVariationForm(variation));
+    });
+
+    this.variationsArray.updateValueAndValidity();
+  }
+
+  private mapProductVariations(product: Product): IProductVariation[] {
+    if (!product.variations.length) {
+      const fallbackColor = PRODUCT_COLORS[0];
+      return [
+        {
+          id: `${product._id}-variation-0`,
+          name: fallbackColor.name,
+          colorName: fallbackColor.name,
+          colorHex: fallbackColor.hex,
+          stock: product.stock,
+          stockInput: product.stock.toString(),
+          image: product.image || DEFAULT_PRODUCT_IMAGE,
+          isDefault: true,
+          media: [
+            {
+              id: `${product._id}-default-media`,
+              image: product.image || DEFAULT_PRODUCT_IMAGE,
+              isDefault: true,
+              persisted: true,
+              file: null,
+            },
+          ],
+        },
+      ];
+    }
+
+    let defaultAssigned = false;
+
+    const variations = product.variations.map((variation, index) => {
+      const isDefault = variation.isDefault === true && !defaultAssigned;
+      if (isDefault) {
+        defaultAssigned = true;
+      }
+
+      const defaultImage = variation.defaultImage || variation.defaultImg || product.image || DEFAULT_PRODUCT_IMAGE;
+      const galleryImages = (variation.variationImgs ?? variation.variantImages ?? []).filter(
+        (image) => image && image !== defaultImage,
+      );
+      const media: IProductMediaItem[] = [
+        {
+          id: `${variation._id ?? product._id}-${index}-default`,
+          image: defaultImage,
+          isDefault: true,
+          persisted: true,
+          file: null,
+        },
+        ...galleryImages.map((image, imageIndex) => ({
+          id: `${variation._id ?? product._id}-${index}-media-${imageIndex}`,
+          image,
+          isDefault: false,
+          persisted: true,
+          file: null,
+        })),
+      ];
+
+      return {
+        id: variation._id ?? `${product._id}-variation-${index}`,
+        name: variation.colorName,
+        colorName: variation.colorName,
+        colorHex: variation.colorValue,
+        stock: variation.stock,
+        stockInput: variation.stock.toString(),
+        image: defaultImage,
+        isDefault,
+        media,
+      };
+    });
+
+    if (!variations.some((variation) => variation.isDefault) && variations.length) {
+      variations[0].isDefault = true;
+    }
+
+    return variations;
+  }
+
+  private buildUpdateFormData(isDeleted: boolean): FormData | null {
+    if (this.productForm.invalid) {
+      return null;
+    }
+
+    const basicInfo = this.basicInfoForm.getRawValue();
+    const publishing = this.publishingForm.getRawValue();
+    const payload = new FormData();
+
+    payload.append('name', basicInfo.productName.trim());
+    payload.append('description', basicInfo.description.trim());
+    payload.append('price', basicInfo.price);
+    payload.append('category', basicInfo.category);
+    payload.append('featured', String(publishing.featured));
+    payload.append('visible', String(publishing.visibility));
+    payload.append('isDeleted', String(isDeleted));
+
+    payload.append(
+      'variations',
+      JSON.stringify(
+        this.variations.map((variation, variationIndex) =>
+          this.mapVariationToUpdatePayload(variation, variationIndex, payload),
+        ),
+      ),
+    );
+
+    return payload;
+  }
+
+  private buildOriginalProductDeleteFormData(product: Product, isDeleted: boolean): FormData {
+    const payload = new FormData();
+
+    payload.append('name', product.name);
+    payload.append('description', product.description);
+    payload.append('price', product.price.toString());
+    payload.append('category', product.category);
+    payload.append('featured', String(product.featured));
+    payload.append('visible', String(product.visible));
+    payload.append('isDeleted', String(isDeleted));
+    payload.append(
+      'variations',
+      JSON.stringify(
+        this.normalizeProductVariations(product.variations, product.image).map((variation) => ({
+          colorName: variation.colorName,
+          colorValue: variation.colorValue,
+          defaultImage: variation.defaultImage || variation.defaultImg || product.image || DEFAULT_PRODUCT_IMAGE,
+          variationImgs: variation.variationImgs ?? variation.variantImages ?? [],
+          isDefault: variation.isDefault === true,
+          stock: variation.stock,
+        })),
+      ),
+    );
+
+    return payload;
+  }
+
+  private normalizeProductVariations(
+    variations: ProductVariation[],
+    fallbackImage: string,
+  ): ProductVariation[] {
+    if (!variations.length) {
+      return [
+        {
+          colorName: PRODUCT_COLORS[0].name,
+          colorValue: PRODUCT_COLORS[0].hex,
+          defaultImage: fallbackImage || DEFAULT_PRODUCT_IMAGE,
+          variationImgs: [],
+          isDefault: true,
+          stock: 0,
+        },
+      ];
+    }
+
+    const hasExplicitDefault = variations.some((variation) => variation.isDefault === true);
+
+    return variations.map((variation, index) => ({
+      ...variation,
+      defaultImage: variation.defaultImage || variation.defaultImg || fallbackImage || DEFAULT_PRODUCT_IMAGE,
+      variationImgs: variation.variationImgs ?? variation.variantImages ?? [],
+      isDefault: hasExplicitDefault ? variation.isDefault === true : index === 0,
+    }));
+  }
+
+  private mapVariationToUpdatePayload(
+    variation: IProductVariation,
+    variationIndex: number,
+    payload: FormData,
+  ): Record<string, unknown> {
+    const defaultMedia = variation.media.find((mediaItem) => mediaItem.isDefault) ?? variation.media[0];
+    const existingGalleryImages = variation.media
+      .filter((mediaItem) => mediaItem.id !== defaultMedia?.id && !mediaItem.file)
+      .map((mediaItem) => mediaItem.image);
+    const newGalleryFiles = variation.media.filter(
+      (mediaItem) => mediaItem.id !== defaultMedia?.id && !!mediaItem.file,
+    );
+
+    if (defaultMedia?.file) {
+      payload.append(`variation_${variationIndex}_defaultImage`, defaultMedia.file);
+    }
+
+    newGalleryFiles.forEach((mediaItem, imageIndex) => {
+      if (mediaItem.file) {
+        payload.append(`variation_${variationIndex}_image_${imageIndex}`, mediaItem.file);
+      }
+    });
+
+    return {
+      colorName: variation.colorName,
+      colorValue: variation.colorHex,
+      ...(defaultMedia && !defaultMedia.file ? { defaultImage: defaultMedia.image } : {}),
+      variationImgs: existingGalleryImages,
+      isDefault: variation.isDefault,
+      stock: Number(variation.stockInput),
+    };
+  }
+
+  private formatPublishedDate(dateValue: string): string {
+    if (!dateValue) {
+      return '';
+    }
+
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(new Date(dateValue));
+  }
+
   private createDefaultMediaItem(variationId: string): IProductMediaItem {
     return {
       id: `${variationId}-default-media`,
       image: DEFAULT_PRODUCT_IMAGE,
       isDefault: true,
+      persisted: true,
+      file: null,
     };
   }
 
@@ -389,11 +743,17 @@ export class EditProductPage implements OnInit {
     return URL.createObjectURL(file);
   }
 
-  private createUploadedMediaItem(file: File): IProductMediaItem {
+  private createUploadedMediaItem(
+    file: File,
+    id = `media-${Date.now()}`,
+    isDefault = true,
+  ): IProductMediaItem {
     return {
-      id: `media-${Date.now()}`,
+      id,
       image: this.createLocalPreviewUrl(file),
-      isDefault: true,
+      isDefault,
+      persisted: false,
+      file,
     };
   }
 
@@ -420,9 +780,3 @@ export class EditProductPage implements OnInit {
     );
   }
 }
-
-
-
-
-
-

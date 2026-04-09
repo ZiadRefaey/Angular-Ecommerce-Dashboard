@@ -1,59 +1,92 @@
 <section class="min-h-screen bg-[#f5f7fb] px-4 py-5 sm:px-5 lg:px-6">
-  <form [formGroup]="productForm" class="mx-auto max-w-7xl">
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <h1 class="text-[22px] font-bold leading-tight text-[#101828]">Edit Product</h1>
-
-      <div class="flex items-center gap-3 self-start sm:self-auto">
-        <button
-          type="button"
-          class="inline-flex h-11 items-center rounded-[10px] border border-[#d0d5dd] bg-white px-5 text-[14px] font-semibold text-[#475467] transition hover:bg-[#f8fafc]"
-          (click)="onCancel()"
-        >
-          Cancel
-        </button>
-
-        <button
-          type="button"
-          class="inline-flex h-11 items-center rounded-[10px] bg-[#2f6bff] px-5 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(47,107,255,0.25)] transition hover:opacity-95"
-          (click)="onSave()"
-        >
-          Save Product
-        </button>
-      </div>
+  @if (isPageLoading) {
+    <app-loading-spinner></app-loading-spinner>
+  } @else if (errorMessage) {
+    <div
+      class="mx-auto max-w-3xl rounded-[18px] border border-[#fdd5d2] bg-[#fff6f5] px-5 py-4 text-[14px] font-medium text-[#b42318]"
+    >
+      {{ errorMessage }}
     </div>
+  } @else {
+    <form [formGroup]="productForm" class="mx-auto max-w-7xl">
+      <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 class="text-[22px] font-bold leading-tight text-[#101828]">Edit Product</h1>
 
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-      <div class="space-y-6">
-        <app-product-basic-info
-          [form]="basicInfoForm"
-          [categories]="categories"
-          [totalStock]="totalVariationStock"
-        ></app-product-basic-info>
+        <div class="flex flex-wrap items-center gap-3 self-start sm:self-auto">
+          <button
+            type="button"
+            class="inline-flex h-11 items-center rounded-[10px] border border-[#fda29b] bg-white px-5 text-[14px] font-semibold text-[#d92d20] transition hover:bg-[#fff5f4]"
+            (click)="openDeleteProductModal()"
+          >
+            Delete Product
+          </button>
 
-        <app-product-variations
-          [variations]="variations"
-          [variationForms]="variationFormGroups"
-          [activeVariationId]="activeVariationId"
-          [showValidation]="saveAttempted"
-          (variationMediaEdit)="onVariationMediaEdit($event)"
-          (variationDefault)="onVariationDefault($event)"
-          (variationDelete)="requestDeleteVariation($event)"
-          (addVariation)="onAddVariation()"
-        ></app-product-variations>
+          <button
+            type="button"
+            class="inline-flex h-11 items-center rounded-[10px] border border-[#d0d5dd] bg-white px-5 text-[14px] font-semibold text-[#475467] transition hover:bg-[#f8fafc]"
+            (click)="onCancel()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="inline-flex h-11 items-center gap-2 rounded-[10px] bg-[#2f6bff] px-5 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(47,107,255,0.25)] transition hover:opacity-95"
+            [disabled]="isSaving"
+            [class.pointer-events-none]="isSaving"
+            [class.opacity-70]="isSaving"
+            (click)="onSave()"
+          >
+            @if (isSaving) {
+              <i class="pi pi-spinner pi-spin text-[14px]"></i>
+            }
+            <span>{{ isSaving ? 'Saving...' : 'Save Product' }}</span>
+          </button>
+        </div>
       </div>
 
-      <div class="space-y-6">
-        <app-product-media
-          [variation]="activeVariation"
-          (uploadMedia)="onMediaUpload($event)"
-          (selectMedia)="onMediaSelect($event)"
-          (deleteMedia)="requestDeleteMedia($event)"
-        ></app-product-media>
+      @if (saveErrorMessage) {
+        <div
+          class="mb-5 rounded-[14px] border border-[#fecdca] bg-[#fff6f5] px-4 py-3 text-[13px] font-medium text-[#b42318]"
+        >
+          {{ saveErrorMessage }}
+        </div>
+      }
 
-        <app-product-publishing [form]="publishingForm"></app-product-publishing>
+      <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div class="space-y-6">
+          <app-product-basic-info
+            [form]="basicInfoForm"
+            [categories]="categories"
+            [totalStock]="totalVariationStock"
+          ></app-product-basic-info>
+
+          <app-product-variations
+            [variations]="variations"
+            [variationForms]="variationFormGroups"
+            [activeVariationId]="activeVariationId"
+            [showValidation]="saveAttempted"
+            (variationMediaEdit)="onVariationMediaEdit($event)"
+            (variationDefault)="onVariationDefault($event)"
+            (variationDelete)="requestDeleteVariation($event)"
+            (addVariation)="onAddVariation()"
+          ></app-product-variations>
+        </div>
+
+        <div class="space-y-6">
+          <app-product-media
+            [variation]="activeVariation"
+            (uploadMedia)="onMediaUpload($event)"
+            (replaceMedia)="onMediaReplace($event.imageId, $event.event)"
+            (selectMedia)="onMediaSelect($event)"
+            (deleteMedia)="requestDeleteMedia($event)"
+          ></app-product-media>
+
+          <app-product-publishing [form]="publishingForm"></app-product-publishing>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
+  }
 
   <app-modal
     [isOpen]="confirmDeleteOpen"
@@ -85,6 +118,7 @@
       </div>
     </div>
   </app-modal>
+
   <app-modal
     [isOpen]="confirmDeleteVariationOpen"
     title="Delete Variation"
@@ -111,6 +145,48 @@
           (click)="confirmDeleteVariation()"
         >
           Delete
+        </button>
+      </div>
+    </div>
+  </app-modal>
+
+  <app-modal
+    [isOpen]="confirmDeleteProductOpen"
+    title="Delete Product"
+    [widthClass]="'max-w-[420px]'"
+    (closed)="closeDeleteProductModal()"
+  >
+    <div class="space-y-5">
+      <p class="text-[14px] leading-6 text-[#475467]">
+        Are you sure you want to delete this product? It will be marked as deleted and removed from
+        the products page.
+      </p>
+
+      @if (deleteErrorMessage) {
+        <p class="text-[13px] font-medium text-[#f04438]">{{ deleteErrorMessage }}</p>
+      }
+
+      <div class="flex items-center justify-end gap-3">
+        <button
+          type="button"
+          class="inline-flex h-10 items-center rounded-lg border border-[#d0d5dd] bg-white px-4 text-[14px] font-semibold text-[#475467]"
+          (click)="closeDeleteProductModal()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="inline-flex h-10 items-center gap-2 rounded-lg bg-[#f04438] px-4 text-[14px] font-semibold text-white"
+          [disabled]="isDeleting"
+          [class.pointer-events-none]="isDeleting"
+          [class.opacity-70]="isDeleting"
+          (click)="confirmDeleteProduct()"
+        >
+          @if (isDeleting) {
+            <i class="pi pi-spinner pi-spin text-[14px]"></i>
+          }
+          <span>{{ isDeleting ? 'Deleting...' : 'Delete' }}</span>
         </button>
       </div>
     </div>

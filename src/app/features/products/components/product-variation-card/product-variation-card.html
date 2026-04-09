@@ -1,6 +1,10 @@
 <div
   class="relative rounded-2xl border p-5 transition"
-  [ngClass]="variation.isDefault ? 'border-[#2f6bff] bg-[#f5f8ff]' : 'border-[#e6ebf2] bg-white'"
+  [ngClass]="
+    isActiveMediaTarget
+      ? 'border-[#2f6bff] bg-[#f5f8ff] shadow-[0_0_0_4px_rgba(47,107,255,0.08)]'
+      : 'border-[#e6ebf2] bg-white'
+  "
 >
   @if (variation.isDefault) {
     <span
@@ -15,6 +19,12 @@
       <div class="h-23 w-23 overflow-hidden rounded-[10px] bg-[#101828]">
         <img [src]="variation.image" [alt]="variation.name" class="h-full w-full object-cover" />
       </div>
+
+      @if (isActiveMediaTarget) {
+        <p class="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#2f6bff]">
+          Gallery Active
+        </p>
+      }
 
       <button
         type="button"

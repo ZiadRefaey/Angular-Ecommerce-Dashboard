@@ -1,4 +1,5 @@
 export interface ProductVariation {
+  _id?: string;
   colorName: string;
   colorValue: string;
   defaultImage?: string;
@@ -32,6 +33,11 @@ export interface ProductsResponse {
   data: Product[];
 }
 
+export interface ProductByIdResponse {
+  message: string;
+  data: Product[];
+}
+
 export interface CreateProductVariationPayload {
   colorName: string;
   colorValue: string;
@@ -52,4 +58,24 @@ export interface CreateProductPayload {
 export interface CreateProductResponse {
   message: string;
   data?: Product;
+}
+
+export interface UpdateProductVariationPayload {
+  colorName: string;
+  colorValue: string;
+  defaultImage: string;
+  variationImgs: string[];
+  isDefault: boolean;
+  stock: number;
+}
+
+export interface UpdateProductPayload {
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  variations: UpdateProductVariationPayload[];
+  featured: boolean;
+  visible: boolean;
+  isDeleted: boolean;
 }

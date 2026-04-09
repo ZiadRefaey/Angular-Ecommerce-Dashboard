@@ -2,6 +2,8 @@ export interface IProductMediaItem {
   id: string;
   image: string;
   isDefault?: boolean;
+  file?: File | null;
+  persisted?: boolean;
 }
 
 export interface IProductVariation {
