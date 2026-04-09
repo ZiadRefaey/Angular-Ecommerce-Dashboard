@@ -71,7 +71,10 @@ export class ProductsPage implements OnInit {
     const outOfStockCount = this.allProducts.filter(
       (product) => this.getProductStockStatus(product) === 'OUT_OF_STOCK',
     ).length;
-    const inventoryValue = this.allProducts.reduce((total, product) => total + product.price, 0);
+    const inventoryValue = this.allProducts.reduce(
+      (total, product) => total + product.price * product.stock,
+      0,
+    );
 
     return [
       {
@@ -99,6 +102,8 @@ export class ProductsPage implements OnInit {
         value: new Intl.NumberFormat('en-US', {
           style: 'currency',
           currency: 'EGP',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
         }).format(inventoryValue),
       },
     ];
@@ -156,7 +161,7 @@ export class ProductsPage implements OnInit {
       categoriesResponse: this.categoriesService.getCategories(),
     }).subscribe({
       next: ({ productsResponse, categoriesResponse }) => {
-        this.allProducts = productsResponse.data;
+        this.allProducts = productsResponse.data.filter((product) => product.isDeleted === false);
         this.allCategories = categoriesResponse.data;
         this.buildCategoryNamesMap();
         this.isLoading = false;
@@ -211,6 +216,21 @@ export class ProductsPage implements OnInit {
         return 'bg-slate-400';
     }
   }
+
+  getProductTableImage(product: Product): string {
+    const defaultVariation = product.variations.find((variation) => variation.isDefault);
+
+    if (defaultVariation?.defaultImage) {
+      return defaultVariation.defaultImage;
+    }
+
+    if (defaultVariation?.defaultImg) {
+      return defaultVariation.defaultImg;
+    }
+
+    return product.image;
+  }
+
   isCreateProductModalOpen = false;
 
   openCreateProductModal(): void {
@@ -219,6 +239,11 @@ export class ProductsPage implements OnInit {
 
   closeCreateProductModal(): void {
     this.isCreateProductModalOpen = false;
+  }
+
+  refreshProducts(): void {
+    this.resetPagination();
+    this.loadProducts();
   }
 
   updateSearchTerm(value: string): void {

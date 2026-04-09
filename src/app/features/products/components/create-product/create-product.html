@@ -91,13 +91,32 @@
             <div class="grid grid-cols-2 gap-3 xl:grid-cols-3">
               @for (galleryItem of galleryPreviewItems; track galleryItem.id) {
                 <div
-                  class="overflow-hidden rounded-2xl border border-[#dbe4f0] bg-[#f8fafc] shadow-sm"
+                  class="group relative overflow-hidden rounded-2xl border border-[#dbe4f0] bg-[#f8fafc] shadow-sm"
                 >
-                  <img
-                    [src]="galleryItem.previewUrl"
-                    [alt]="galleryItem.name"
-                    class="h-32 w-full object-cover"
+                  <button
+                    type="button"
+                    class="absolute left-3 top-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#101828]/70 text-white opacity-0 shadow-sm transition hover:bg-[#f04438] group-hover:opacity-100"
+                    (click)="removeGalleryImage(galleryItem.id)"
+                  >
+                    <i class="pi pi-trash text-xs"></i>
+                  </button>
+
+                  <label [for]="'galleryReplace-' + galleryItem.id" class="block cursor-pointer">
+                    <img
+                      [src]="galleryItem.previewUrl"
+                      [alt]="galleryItem.name"
+                      class="h-32 w-full object-cover transition duration-200 group-hover:scale-[1.02]"
+                    />
+                  </label>
+
+                  <input
+                    [id]="'galleryReplace-' + galleryItem.id"
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="onGalleryImageReplaced(galleryItem.id, $event)"
                   />
+
                   <p class="truncate px-3 py-2 text-xs font-medium text-[#667085]">
                     {{ galleryItem.name }}
                   </p>
@@ -273,6 +292,10 @@
     </div>
 
     <div class="mt-6 flex shrink-0 items-center justify-end gap-3 border-t border-[#eaecf0] pt-4">
+      @if (submitErrorMessage) {
+        <p class="mr-auto text-sm font-medium text-[#f04438]">{{ submitErrorMessage }}</p>
+      }
+
       <button
         type="button"
         class="rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#667085] transition hover:bg-[#f8fafc]"
@@ -284,8 +307,11 @@
       <button
         type="submit"
         class="rounded-xl bg-[#2f6bff] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-[0_10px_24px_rgba(47,107,255,0.24)] transition hover:opacity-95"
+        [disabled]="isSubmitting"
+        [class.pointer-events-none]="isSubmitting"
+        [class.opacity-70]="isSubmitting"
       >
-        Create Product
+        {{ isSubmitting ? 'Creating...' : 'Create Product' }}
       </button>
     </div>
   </form>

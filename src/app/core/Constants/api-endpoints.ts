@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     base: '/product',
     getAll: '/getAllProducts',
     getById: '/getProductById',
+    createProduct: '/createProduct',
   },
   orders: {
     base: '/order',

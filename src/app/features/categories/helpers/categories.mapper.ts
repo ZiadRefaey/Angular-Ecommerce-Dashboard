@@ -23,10 +23,12 @@ export function buildCategoryListItems(
     }
   });
 
-  const productsCountByCategoryId = products.reduce<Record<string, number>>((accumulator, product) => {
-    accumulator[product.category] = (accumulator[product.category] ?? 0) + 1;
-    return accumulator;
-  }, {});
+  const productsCountByCategoryId = products
+    .filter((product) => product.isDeleted === false)
+    .reduce<Record<string, number>>((accumulator, product) => {
+      accumulator[product.category] = (accumulator[product.category] ?? 0) + 1;
+      return accumulator;
+    }, {});
 
   return [...uniqueCategories.values()]
     .map((category) => ({
