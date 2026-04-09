@@ -12,6 +12,12 @@ export class CategoriesService {
   private readonly http = inject(HttpClient);
   private readonly categoriesUrl = `${env.apiBaseUrl}/api${API_ENDPOINTS.categories.base}`;
 
+  getCategories(): Observable<CategoriesResponse> {
+    return this.http.get<CategoriesResponse>(
+      `${this.categoriesUrl}${API_ENDPOINTS.categories.getAll}`,
+    );
+  }
+
   getCategoryById(categoryId: string): Observable<CategoriesResponse> {
     return this.http.get<CategoriesResponse>(
       `${this.categoriesUrl}${API_ENDPOINTS.categories.getById}/${categoryId}`,

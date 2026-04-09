@@ -6,9 +6,12 @@ import { TableModule } from 'primeng/table';
 import { StatusBadge } from './components/status-badge/status-badge';
 import { Modal } from './components/modal/modal';
 import { Button } from './components/button/button';
+import { CategoryDatePipe } from './pipes/category-date.pipe';
+import { LoadingSpinner } from './components/loading-spinner/loading-spinner';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 @NgModule({
-  declarations: [DataTable, StatsCard, StatusBadge, Modal, Button],
-  imports: [CommonModule, TableModule],
-  exports: [DataTable, StatsCard, StatusBadge, Modal, Button],
+  declarations: [DataTable, StatsCard, StatusBadge, Modal, Button, CategoryDatePipe, LoadingSpinner],
+  imports: [CommonModule, TableModule, ProgressSpinnerModule],
+  exports: [DataTable, StatsCard, StatusBadge, Modal, Button, CategoryDatePipe, LoadingSpinner],
 })
 export class SharedModule {}

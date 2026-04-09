@@ -1,8 +1,7 @@
-export type CategoryStatus = 'ACTIVE' | 'DRAFT';
-
 export interface Category {
   _id: string;
   name: string;
+  createdAt?: string;
 }
 
 export interface CategoriesResponse {
@@ -11,10 +10,9 @@ export interface CategoriesResponse {
 }
 
 export interface CategoryListItem {
-  id: number;
+  id: string;
   name: string;
   productsCount: number;
-  status: CategoryStatus;
   createdAt: string;
 }
 export interface CategoryStatsCard {

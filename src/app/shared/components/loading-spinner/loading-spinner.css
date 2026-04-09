@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .shared-loading-spinner .p-progressspinner-circle {
+  stroke: #2f6bff;
+}

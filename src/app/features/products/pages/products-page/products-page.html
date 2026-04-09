@@ -33,19 +33,7 @@
 
     <div class="mt-7">
       @if (isLoading) {
-        <div
-          class="rounded-[14px] border border-[#dde5ef] bg-white px-5 py-10 shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
-        >
-          <div class="flex flex-col items-center justify-center gap-4">
-            <p-progress-spinner
-              strokeWidth="4"
-              animationDuration=".9s"
-              [style]="{ width: '52px', height: '52px' }"
-              class="products-loading-spinner"
-            ></p-progress-spinner>
-            <p class="text-[14px] font-medium text-[#667085]">Loading products...</p>
-          </div>
-        </div>
+        <app-loading-spinner message="Loading products..."></app-loading-spinner>
       } @else if (errorMessage) {
         <div
           class="rounded-[14px] border border-[#fde2e1] bg-white px-5 py-10 text-center shadow-[0_1px_2px_rgba(16,24,40,0.04)]"

@@ -13,18 +13,6 @@
   </label>
 
   <select
-    [ngModel]="selectedStatus"
-    (ngModelChange)="onSelectedStatusChange($event)"
-    class="h-10 min-w-40 rounded-lg border border-[#d8e0ea] bg-white px-3 text-[14px] text-[#101828] outline-none transition focus:border-[#2f6bff]"
-  >
-    @for (status of statusOptions; track status) {
-      <option [ngValue]="status">
-        {{ status === 'ALL' ? 'All Status' : status }}
-      </option>
-    }
-  </select>
-
-  <select
     [ngModel]="selectedSortField"
     (ngModelChange)="onSelectedSortFieldChange($event)"
     class="h-10 min-w-40 rounded-lg border border-[#d8e0ea] bg-white px-3 text-[14px] text-[#101828] outline-none transition focus:border-[#2f6bff]"

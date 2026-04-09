@@ -8,35 +8,40 @@
     ></app-categories-stats-cards-section>
 
     <div class="mt-7 overflow-hidden rounded-[14px] border border-[#dde5ef] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
-      <app-categories-filters
-        [searchTerm]="searchTerm"
-        [selectedStatus]="selectedStatus"
-        [selectedSortField]="selectedSortField"
-        [selectedSortDirection]="selectedSortDirection"
-        [statusOptions]="statusOptions"
-        [sortFields]="sortFields"
-        (searchTermChange)="updateSearchTerm($event)"
-        (selectedStatusChange)="updateSelectedStatus($event)"
-        (selectedSortFieldChange)="updateSelectedSortField($event)"
-        (selectedSortDirectionChange)="updateSelectedSortDirection($event)"
-      ></app-categories-filters>
+      @if (isLoading) {
+        <app-loading-spinner message="Loading categories..."></app-loading-spinner>
+      } @else if (errorMessage) {
+        <div class="px-5 py-10 text-center">
+          <p class="text-[14px] font-medium text-[#f04438]">{{ errorMessage }}</p>
+        </div>
+      } @else {
+        <app-categories-filters
+          [searchTerm]="searchTerm"
+          [selectedSortField]="selectedSortField"
+          [selectedSortDirection]="selectedSortDirection"
+          [sortFields]="sortFields"
+          (searchTermChange)="updateSearchTerm($event)"
+          (selectedSortFieldChange)="updateSelectedSortField($event)"
+          (selectedSortDirectionChange)="updateSelectedSortDirection($event)"
+        ></app-categories-filters>
 
-      <app-categories-table
-        [categories]="paginatedCategories"
-        [columns]="columns"
-        [showingFrom]="showingFrom"
-        [showingTo]="showingTo"
-        [totalItems]="filteredAndSortedCategories.length"
-      ></app-categories-table>
+        <app-categories-table
+          [categories]="paginatedCategories"
+          [columns]="columns"
+          [showingFrom]="showingFrom"
+          [showingTo]="showingTo"
+          [totalItems]="filteredAndSortedCategories.length"
+        ></app-categories-table>
 
-      <app-categories-pagination
-        [currentPage]="currentPage"
-        [totalPages]="totalPages"
-        [pageNumbers]="pageNumbers"
-        (previousPage)="goToPreviousPage()"
-        (nextPage)="goToNextPage()"
-        (pageChange)="goToPage($event)"
-      ></app-categories-pagination>
+        <app-categories-pagination
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          [pageNumbers]="pageNumbers"
+          (previousPage)="goToPreviousPage()"
+          (nextPage)="goToNextPage()"
+          (pageChange)="goToPage($event)"
+        ></app-categories-pagination>
+      }
     </div>
   </div>
   <app-create-category

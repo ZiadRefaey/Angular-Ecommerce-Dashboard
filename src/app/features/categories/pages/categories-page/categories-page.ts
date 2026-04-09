@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import {
-  CategoryListItem,
-  CategoryStatsCard,
-  CategoryStatus,
-} from '../../models/categories.model';
+import { Component, OnInit, inject } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { CategoryListItem, CategoryStatsCard } from '../../models/categories.model';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
+import { CategoriesService } from '../../../../core/services/categories.service';
+import { ProductsService } from '../../../../core/services/products.service';
+import { buildCategoryListItems } from '../../helpers/categories.mapper';
 
-type CategorySortField = 'name' | 'status' | 'createdAt';
+type CategorySortField = 'name' | 'productsCount';
 type CategorySortDirection = 'asc' | 'desc';
 
 @Component({
@@ -15,134 +15,72 @@ type CategorySortDirection = 'asc' | 'desc';
   templateUrl: './categories-page.html',
   styleUrl: './categories-page.css',
 })
-export class CategoriesPage {
+export class CategoriesPage implements OnInit {
+  private readonly categoriesService = inject(CategoriesService);
+  private readonly productsService = inject(ProductsService);
+
   columns: DataTableColumn[] = [
-    { field: 'name', header: 'CATEGORY NAME', width: '40%' },
-    { field: 'productsCount', header: 'PRODUCTS', width: '20%' },
-    { field: 'status', header: 'STATUS', width: '20%' },
-    { field: 'createdAt', header: 'CREATED AT', width: '12%' },
+    { field: 'name', header: 'CATEGORY NAME', width: '46%' },
+    { field: 'productsCount', header: 'PRODUCTS', width: '18%' },
+    { field: 'createdAt', header: 'CREATED AT', width: '20%' },
     {
       field: 'actions',
       header: 'ACTIONS',
-      width: '8%',
-      headerAlign: 'right',
-      bodyAlign: 'right',
+      width: '16%',
+      headerAlign: 'center',
+      bodyAlign: 'center',
     },
   ];
 
   readonly pageSize = 4;
-  readonly statusOptions: Array<'ALL' | CategoryStatus> = ['ALL', 'ACTIVE', 'DRAFT'];
   readonly sortFields: ReadonlyArray<{ label: string; value: CategorySortField }> = [
     { label: 'Name', value: 'name' },
-    { label: 'Status', value: 'status' },
-    { label: 'Date Added', value: 'createdAt' },
+    { label: 'Products', value: 'productsCount' },
   ];
 
   searchTerm = '';
-  selectedStatus: 'ALL' | CategoryStatus = 'ALL';
   selectedSortField: CategorySortField = 'name';
   selectedSortDirection: CategorySortDirection = 'asc';
   currentPage = 1;
+  isLoading = true;
+  errorMessage = '';
 
-  allCategories: CategoryListItem[] = [
-    {
-      id: 1,
-      name: 'Laptops & Computers',
-      productsCount: 128,
-      status: 'ACTIVE',
-      createdAt: '2026-03-10',
-    },
-    {
-      id: 2,
-      name: 'Smartphones',
-      productsCount: 95,
-      status: 'ACTIVE',
-      createdAt: '2026-03-09',
-    },
-    {
-      id: 3,
-      name: 'Audio Devices',
-      productsCount: 64,
-      status: 'ACTIVE',
-      createdAt: '2026-03-08',
-    },
-    {
-      id: 4,
-      name: 'Gaming',
-      productsCount: 42,
-      status: 'DRAFT',
-      createdAt: '2026-03-07',
-    },
-    {
-      id: 5,
-      name: 'Accessories',
-      productsCount: 76,
-      status: 'ACTIVE',
-      createdAt: '2026-03-06',
-    },
-    {
-      id: 6,
-      name: 'Wearables',
-      productsCount: 31,
-      status: 'DRAFT',
-      createdAt: '2026-03-05',
-    },
-    {
-      id: 7,
-      name: 'Smart Home',
-      productsCount: 54,
-      status: 'ACTIVE',
-      createdAt: '2026-03-04',
-    },
-    {
-      id: 8,
-      name: 'Cameras',
-      productsCount: 27,
-      status: 'ACTIVE',
-      createdAt: '2026-03-03',
-    },
-    {
-      id: 9,
-      name: 'Office Setup',
-      productsCount: 33,
-      status: 'DRAFT',
-      createdAt: '2026-03-02',
-    },
-    {
-      id: 10,
-      name: 'Networking',
-      productsCount: 18,
-      status: 'ACTIVE',
-      createdAt: '2026-03-01',
-    },
-  ];
+  allCategories: CategoryListItem[] = [];
+
+  ngOnInit(): void {
+    this.loadCategories();
+  }
 
   get statsCards(): CategoryStatsCard[] {
-    const activeCount = this.allCategories.filter((category) => category.status === 'ACTIVE').length;
-    const draftCount = this.allCategories.filter((category) => category.status === 'DRAFT').length;
-    const totalProducts = this.allCategories.reduce(
+    const totalProducts = this.filteredAndSortedCategories.reduce(
       (total, category) => total + category.productsCount,
       0,
     );
+    const categoriesWithProducts = this.filteredAndSortedCategories.filter(
+      (category) => category.productsCount > 0,
+    ).length;
+    const emptyCategories = this.filteredAndSortedCategories.filter(
+      (category) => category.productsCount === 0,
+    ).length;
 
     return [
       {
         iconClass: 'pi pi-sitemap text-[#2f6bff]',
         iconWrapperClass: 'bg-[#edf4ff]',
         title: 'TOTAL CATEGORIES',
-        value: this.allCategories.length.toString(),
+        value: this.filteredAndSortedCategories.length.toString(),
       },
       {
         iconClass: 'pi pi-check-circle text-[#17b26a]',
         iconWrapperClass: 'bg-[#ebfbf3]',
-        title: 'ACTIVE CATEGORIES',
-        value: activeCount.toString(),
+        title: 'WITH PRODUCTS',
+        value: categoriesWithProducts.toString(),
       },
       {
-        iconClass: 'pi pi-clock text-[#e7a11b]',
+        iconClass: 'pi pi-inbox text-[#e7a11b]',
         iconWrapperClass: 'bg-[#fff7e8]',
-        title: 'DRAFT CATEGORIES',
-        value: draftCount.toString(),
+        title: 'EMPTY CATEGORIES',
+        value: emptyCategories.toString(),
       },
       {
         iconClass: 'pi pi-box text-[#9a4dff]',
@@ -157,23 +95,15 @@ export class CategoriesPage {
     const normalizedSearch = this.searchTerm.trim().toLowerCase();
 
     const filteredCategories = this.allCategories.filter((category) => {
-      const matchesSearch = !normalizedSearch || category.name.toLowerCase().includes(normalizedSearch);
-      const matchesStatus =
-        this.selectedStatus === 'ALL' || category.status === this.selectedStatus;
-
-      return matchesSearch && matchesStatus;
+      return !normalizedSearch || category.name.toLowerCase().includes(normalizedSearch);
     });
 
     return [...filteredCategories].sort((first, second) => {
       let comparison = 0;
 
       switch (this.selectedSortField) {
-        case 'status':
-          comparison = first.status.localeCompare(second.status);
-          break;
-        case 'createdAt':
-          comparison =
-            new Date(first.createdAt).getTime() - new Date(second.createdAt).getTime();
+        case 'productsCount':
+          comparison = first.productsCount - second.productsCount;
           break;
         case 'name':
         default:
@@ -225,11 +155,6 @@ export class CategoriesPage {
     this.resetPagination();
   }
 
-  updateSelectedStatus(value: 'ALL' | CategoryStatus): void {
-    this.selectedStatus = value;
-    this.resetPagination();
-  }
-
   updateSelectedSortField(value: CategorySortField): void {
     this.selectedSortField = value;
     this.resetPagination();
@@ -258,5 +183,27 @@ export class CategoriesPage {
 
   private resetPagination(): void {
     this.currentPage = 1;
+  }
+
+  private loadCategories(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    forkJoin({
+      categoriesResponse: this.categoriesService.getCategories(),
+      productsResponse: this.productsService.getProducts(),
+    }).subscribe({
+      next: ({ categoriesResponse, productsResponse }) => {
+        this.allCategories = buildCategoryListItems(
+          categoriesResponse.data,
+          productsResponse.data,
+        );
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load categories right now. Please try again.';
+        this.isLoading = false;
+      },
+    });
   }
 }

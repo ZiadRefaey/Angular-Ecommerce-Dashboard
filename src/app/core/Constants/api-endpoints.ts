@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
   },
   categories: {
     base: '/category',
+    getAll: '/getAllCategory',
     getById: '/getCategoryById',
   },
   products: {
