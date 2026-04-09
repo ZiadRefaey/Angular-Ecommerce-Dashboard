@@ -10,6 +10,7 @@ export interface IProductVariation {
   colorName: string;
   colorHex: string;
   stock: number;
+  stockInput: string;
   image: string;
   isDefault: boolean;
   media: IProductMediaItem[];

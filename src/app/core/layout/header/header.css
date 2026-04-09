@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .header-search-spinner .p-progressspinner-circle {
+  stroke: #2f6bff;
+}
+
+.search-dropdown {
+  backdrop-filter: blur(12px);
+}

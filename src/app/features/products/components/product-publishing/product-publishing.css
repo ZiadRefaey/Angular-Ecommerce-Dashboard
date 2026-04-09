@@ -1,3 +1,52 @@
 :host {
   display: block;
 }
+
+.custom-toggle {
+  position: relative;
+  display: inline-flex;
+  height: 1.75rem;
+  width: 3.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  border: 1px solid #d0d5dd;
+  border-radius: 9999px;
+  background: #e4e7ec;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.custom-toggle:hover {
+  border-color: #2f6bff;
+}
+
+.custom-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(47, 107, 255, 0.16);
+}
+
+.custom-toggle-active {
+  border-color: #2f6bff;
+  background: #2f6bff;
+}
+
+.custom-toggle-knob {
+  position: absolute;
+  top: 50%;
+  left: 0.25rem;
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.18),
+    0 1px 3px rgba(16, 24, 40, 0.1);
+  transform: translateY(-50%) translateX(0);
+  transition: transform 0.2s ease;
+}
+
+.custom-toggle-active .custom-toggle-knob {
+  transform: translateY(-50%) translateX(1.5rem);
+}

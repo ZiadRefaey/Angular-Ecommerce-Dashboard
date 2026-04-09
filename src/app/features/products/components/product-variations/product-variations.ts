@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { IProductVariation } from '../../models/edit-product-model';
 
 @Component({
@@ -9,16 +10,17 @@ import { IProductVariation } from '../../models/edit-product-model';
 })
 export class ProductVariations {
   @Input() variations: IProductVariation[] = [];
+  @Input() variationForms: FormGroup[] = [];
   @Input() activeVariationId = '';
+  @Input() showValidation = false;
 
   @Output() variationMediaEdit = new EventEmitter<string>();
   @Output() variationDefault = new EventEmitter<string>();
   @Output() variationDelete = new EventEmitter<string>();
-  @Output() variationUpdate = new EventEmitter<IProductVariation>();
   @Output() addVariation = new EventEmitter<void>();
 
-  onVariationChange(updated: IProductVariation): void {
-    this.variationUpdate.emit(updated);
+  get canDeleteVariation(): boolean {
+    return this.variations.length > 1;
   }
 
   getUnavailableColorNames(currentVariationId: string): string[] {

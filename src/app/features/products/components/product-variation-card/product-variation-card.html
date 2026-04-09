@@ -53,6 +53,9 @@
           <button
             type="button"
             class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[#98a2b3] transition hover:bg-[#f9fafb] hover:text-[#f04438]"
+            [disabled]="!canDelete"
+            [class.pointer-events-none]="!canDelete"
+            [class.opacity-40]="!canDelete"
             (click)="deleteVariation.emit(variation.id)"
           >
             <i class="pi pi-trash text-[13px]"></i>
@@ -70,8 +73,12 @@
           <app-product-color-select
             [ngModel]="variation.colorName"
             [unavailableColorNames]="unavailableColorNames"
+            [invalid]="isColorInvalid"
             (colorSelected)="onColorChange($event)"
           ></app-product-color-select>
+          @if (isColorInvalid) {
+            <p class="mt-2 text-[12px] font-medium text-[#f04438]">Color is required.</p>
+          }
         </div>
 
         <div>
@@ -81,13 +88,18 @@
             Stock
           </label>
           <input
-            type="number"
-            [value]="variation.stock"
+            type="text"
+            [value]="variation.stockInput"
             (input)="onStockChange($any($event.target).value)"
-            class="h-10 w-full rounded-lg border border-[#e4e7ec] bg-white px-3 text-[13px] text-[#344054] outline-none"
+            class="h-10 w-full rounded-lg border bg-white px-3 text-[13px] text-[#344054] outline-none"
+            [ngClass]="isStockInvalid ? 'border-[#f04438]' : 'border-[#e4e7ec]'"
           />
+          @if (isStockInvalid) {
+            <p class="mt-2 text-[12px] font-medium text-[#f04438]">{{ stockErrorMessage }}</p>
+          }
         </div>
       </div>
     </div>
   </div>
 </div>
+

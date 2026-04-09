@@ -9,4 +9,16 @@ import { FormGroup } from '@angular/forms';
 })
 export class ProductPublishing {
   @Input({ required: true }) form!: FormGroup;
+
+  toggleControl(controlName: 'visibility' | 'featured'): void {
+    const control = this.form.get(controlName);
+
+    if (!control) {
+      return;
+    }
+
+    control.setValue(!control.value);
+    control.markAsDirty();
+    control.markAsTouched();
+  }
 }

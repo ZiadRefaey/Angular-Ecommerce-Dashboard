@@ -1,5 +1,5 @@
 <section class="min-h-screen bg-[#f5f7fb] px-4 py-5 sm:px-5 lg:px-6">
-  <div class="mx-auto max-w-7xl">
+  <form [formGroup]="productForm" class="mx-auto max-w-7xl">
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <h1 class="text-[22px] font-bold leading-tight text-[#101828]">Edit Product</h1>
 
@@ -32,11 +32,12 @@
 
         <app-product-variations
           [variations]="variations"
+          [variationForms]="variationFormGroups"
           [activeVariationId]="activeVariationId"
+          [showValidation]="saveAttempted"
           (variationMediaEdit)="onVariationMediaEdit($event)"
           (variationDefault)="onVariationDefault($event)"
           (variationDelete)="requestDeleteVariation($event)"
-          (variationUpdate)="onVariationUpdate($event)"
           (addVariation)="onAddVariation()"
         ></app-product-variations>
       </div>
@@ -52,7 +53,7 @@
         <app-product-publishing [form]="publishingForm"></app-product-publishing>
       </div>
     </div>
-  </div>
+  </form>
 
   <app-modal
     [isOpen]="confirmDeleteOpen"

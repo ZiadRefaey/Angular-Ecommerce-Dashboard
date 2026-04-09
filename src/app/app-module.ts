@@ -12,6 +12,7 @@ import { App } from './app';
 import { AppRoutingModule } from './app-routing-module';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { RouterModule } from '@angular/router';
 import { Layout } from './core/layout/layout';
@@ -27,6 +28,7 @@ import { CoreModule } from './core/core-module';
     BrowserAnimationsModule,
     CoreModule,
     TableModule,
+    ProgressSpinnerModule,
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

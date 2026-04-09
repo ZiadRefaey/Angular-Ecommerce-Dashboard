@@ -8,7 +8,7 @@
     <h2 class="text-[16px] font-semibold text-[#101828]">Basic Information</h2>
   </div>
 
-  <form [formGroup]="form" class="space-y-5">
+  <div [formGroup]="form" class="space-y-5">
     <div>
       <label class="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#7b8aa0]">
         Product Name
@@ -16,8 +16,20 @@
       <input
         type="text"
         formControlName="productName"
-        class="h-11.5 w-full rounded-[10px] border border-[#eaecf0] bg-[#f8fafc] px-4 text-[14px] text-[#101828] outline-none focus:border-[#2f6bff] focus:bg-white"
+        class="h-11.5 w-full rounded-[10px] border bg-[#f8fafc] px-4 text-[14px] text-[#101828] outline-none focus:border-[#2f6bff] focus:bg-white"
+        [ngClass]="
+          form.get('productName')?.touched && form.get('productName')?.invalid
+            ? 'border-[#f04438]'
+            : 'border-[#eaecf0]'
+        "
       />
+      @if (form.get('productName')?.touched && form.get('productName')?.hasError('required')) {
+        <p class="mt-2 text-[12px] font-medium text-[#f04438]">Product name is required.</p>
+      } @else if (form.get('productName')?.touched && form.get('productName')?.hasError('minlength')) {
+        <p class="mt-2 text-[12px] font-medium text-[#f04438]">
+          Product name must be at least 3 characters.
+        </p>
+      }
     </div>
 
     <div>
@@ -27,8 +39,20 @@
       <textarea
         formControlName="description"
         rows="5"
-        class="w-full rounded-[10px] border border-[#eaecf0] bg-[#f8fafc] px-4 py-3 text-[14px] leading-6 text-[#344054] outline-none focus:border-[#2f6bff] focus:bg-white"
+        class="w-full rounded-[10px] border bg-[#f8fafc] px-4 py-3 text-[14px] leading-6 text-[#344054] outline-none focus:border-[#2f6bff] focus:bg-white"
+        [ngClass]="
+          form.get('description')?.touched && form.get('description')?.invalid
+            ? 'border-[#f04438]'
+            : 'border-[#eaecf0]'
+        "
       ></textarea>
+      @if (form.get('description')?.touched && form.get('description')?.hasError('required')) {
+        <p class="mt-2 text-[12px] font-medium text-[#f04438]">Description is required.</p>
+      } @else if (form.get('description')?.touched && form.get('description')?.hasError('minlength')) {
+        <p class="mt-2 text-[12px] font-medium text-[#f04438]">
+          Description must be at least 6 characters.
+        </p>
+      }
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -47,6 +71,9 @@
           appendTo="body"
           class="w-full edit-page-select"
         ></p-select>
+        @if (form.get('category')?.touched && form.get('category')?.hasError('required')) {
+          <p class="mt-2 text-[12px] font-medium text-[#f04438]">Category is required.</p>
+        }
       </div>
 
       <div>
@@ -58,9 +85,14 @@
 
         <div class="relative">
           <input
-            type="number"
+            type="text"
             formControlName="price"
-            class="h-11.5 w-full rounded-[10px] border border-[#eaecf0] bg-[#f8fafc] px-4 pr-14 text-[14px] text-[#101828] outline-none focus:border-[#2f6bff] focus:bg-white"
+            class="h-11.5 w-full rounded-[10px] border bg-[#f8fafc] px-4 pr-14 text-[14px] text-[#101828] outline-none focus:border-[#2f6bff] focus:bg-white"
+            [ngClass]="
+              form.get('price')?.touched && form.get('price')?.invalid
+                ? 'border-[#f04438]'
+                : 'border-[#eaecf0]'
+            "
           />
           <span
             class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-medium text-[#98a2b3]"
@@ -68,6 +100,11 @@
             EGP
           </span>
         </div>
+        @if (form.get('price')?.touched && form.get('price')?.hasError('required')) {
+          <p class="mt-2 text-[12px] font-medium text-[#f04438]">Price is required.</p>
+        } @else if (form.get('price')?.touched && form.get('price')?.hasError('pattern')) {
+          <p class="mt-2 text-[12px] font-medium text-[#f04438]">Price must be a number greater than 0 and cannot start with 0.</p>
+        }
       </div>
 
       <div>
@@ -83,5 +120,6 @@
         </div>
       </div>
     </div>
-  </form>
+  </div>
 </div>
+

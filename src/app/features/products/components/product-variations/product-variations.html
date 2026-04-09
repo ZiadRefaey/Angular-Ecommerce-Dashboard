@@ -20,16 +20,24 @@
   </div>
 
   <div class="space-y-4">
-    @for (variation of variations; track variation.id) {
+    @for (variation of variations; track variation.id; let index = $index) {
       <app-product-variation-card
         [variation]="variation"
+        [variationForm]="variationForms[index]"
         [isActiveMediaTarget]="variation.id === activeVariationId"
         [unavailableColorNames]="getUnavailableColorNames(variation.id)"
+        [canDelete]="canDeleteVariation"
+        [showValidation]="showValidation"
         (editMedia)="variationMediaEdit.emit($event)"
         (setDefault)="variationDefault.emit($event)"
         (deleteVariation)="variationDelete.emit($event)"
-        (variationChange)="onVariationChange($event)"
       ></app-product-variation-card>
     }
   </div>
+
+  @if (showValidation && !variations.length) {
+    <p class="mt-4 text-[12px] font-medium text-[#f04438]">
+      At least one variation is required.
+    </p>
+  }
 </div>
