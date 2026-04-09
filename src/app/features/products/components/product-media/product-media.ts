@@ -13,6 +13,10 @@ export class ProductMedia {
   @Output() selectMedia = new EventEmitter<string>();
   @Output() deleteMedia = new EventEmitter<string>();
 
+  get canDeleteMedia(): boolean {
+    return (this.variation?.media.length ?? 0) > 1;
+  }
+
   onFileInput(event: Event): void {
     this.uploadMedia.emit(event);
   }

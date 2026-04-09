@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -9,13 +9,14 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './side-bar.html',
   styleUrl: './side-bar.css',
   host: {
-    class:
-      'w-64 bg-gray-900 h-[100%] text-white row-span-2 flex items-start justify-start flex-col',
+    class: 'contents',
   },
 })
 export class SideBar {
   private router = inject(Router);
   private authService = inject(AuthService);
+  @Input() isOpen = false;
+  @Output() closed = new EventEmitter<void>();
   currentUrl = '';
   ngOnInit() {
     this.router.events
@@ -27,5 +28,9 @@ export class SideBar {
   logout() {
     this.authService.logout();
     console.log('clicked');
+  }
+
+  closeSidebar(): void {
+    this.closed.emit();
   }
 }

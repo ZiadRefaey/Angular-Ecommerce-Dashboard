@@ -1,4 +1,13 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  Output,
+  inject,
+} from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subject, of, switchMap, takeUntil, tap, catchError, map, filter } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
@@ -22,7 +31,9 @@ export class Header implements OnInit, OnDestroy {
   searchResults: Product[] = [];
   isLoading = false;
   isDropdownOpen = false;
+  isMobileSearchOpen = false;
   errorMessage = '';
+  @Output() sidebarToggle = new EventEmitter<void>();
 
   ngOnInit(): void {
     this.router.events
@@ -95,6 +106,15 @@ export class Header implements OnInit, OnDestroy {
     }
   }
 
+  openMobileSearch(): void {
+    this.isMobileSearchOpen = true;
+  }
+
+  closeMobileSearch(): void {
+    this.isMobileSearchOpen = false;
+    this.isDropdownOpen = false;
+  }
+
   navigateToProduct(product: Product): void {
     this.searchTerm = product.name;
     this.isDropdownOpen = false;
@@ -111,6 +131,7 @@ export class Header implements OnInit, OnDestroy {
   onDocumentClick(event: MouseEvent): void {
     if (!this.elementRef.nativeElement.contains(event.target as Node)) {
       this.isDropdownOpen = false;
+      this.isMobileSearchOpen = false;
     }
   }
 
@@ -119,6 +140,7 @@ export class Header implements OnInit, OnDestroy {
     this.searchResults = [];
     this.isLoading = false;
     this.isDropdownOpen = false;
+    this.isMobileSearchOpen = false;
     this.errorMessage = '';
     this.selectedProductRoute = '';
   }

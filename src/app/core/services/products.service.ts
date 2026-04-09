@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { env } from '../../../enviroment/.env';
 import { API_ENDPOINTS } from '../Constants/api-endpoints';
-import { ProductsResponse } from '../../features/products/models/products.model';
+import { Product, ProductsResponse } from '../../features/products/models/products.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,5 +14,11 @@ export class ProductsService {
 
   getProducts(): Observable<ProductsResponse> {
     return this.http.get<ProductsResponse>(`${this.productsUrl}${API_ENDPOINTS.products.getAll}`);
+  }
+
+  getProductById(productId: string): Observable<Product> {
+    return this.http.get<Product>(
+      `${this.productsUrl}${API_ENDPOINTS.products.getById}/${productId}`,
+    );
   }
 }

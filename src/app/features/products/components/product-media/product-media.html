@@ -19,6 +19,9 @@
           <p class="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#7b8aa0]">
             Media Gallery ({{ variation.media.length }})
           </p>
+          @if (!canDeleteMedia) {
+            <span class="text-[11px] font-medium text-[#98a2b3]">At least one image is required</span>
+          }
         </div>
 
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
@@ -37,13 +40,15 @@
                 />
               </button>
 
-              <button
-                type="button"
-                class="absolute right-0.5 top-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition group-hover:opacity-100"
-                (click)="deleteMedia.emit(image.id)"
-              >
-                <i class="pi pi-trash text-[2px]"></i>
-              </button>
+              @if (canDeleteMedia) {
+                <button
+                  type="button"
+                  class="absolute right-0.5 top-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition group-hover:opacity-100"
+                  (click)="deleteMedia.emit(image.id)"
+                >
+                  <i class="pi pi-trash text-[2px]"></i>
+                </button>
+              }
             </div>
           }
         </div>

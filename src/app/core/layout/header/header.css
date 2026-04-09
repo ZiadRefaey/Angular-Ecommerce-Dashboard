@@ -9,3 +9,7 @@
 .search-dropdown {
   backdrop-filter: blur(12px);
 }
+
+.header-search-shell {
+  will-change: width, opacity;
+}

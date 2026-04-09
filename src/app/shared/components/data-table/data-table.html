@@ -4,7 +4,7 @@
 >
   <div
     *ngIf="showHeader"
-    class="flex flex-col gap-3 border-b border-[#edf2f7] px-4 py-3 md:flex-row md:items-center md:justify-between md:px-5"
+    class="flex flex-col gap-3 border-b border-[#edf2f7] px-4 py-3 xl:flex-row xl:items-center xl:justify-between xl:px-5"
   >
     <div class="flex items-center gap-3">
       <ng-container *ngIf="topLeftTemplate" [ngTemplateOutlet]="topLeftTemplate"></ng-container>
@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div class="hidden md:block">
+  <div class="hidden xl:block">
     <p-table [value]="data" [tableStyle]="{ 'min-width': minWidth }">
       <ng-template pTemplate="header">
         <tr>
@@ -40,7 +40,7 @@
     </p-table>
   </div>
 
-  <div class="divide-y divide-[#edf2f7] md:hidden">
+  <div class="divide-y divide-[#edf2f7] xl:hidden">
     <ng-container *ngFor="let row of data; let i = index">
       <ng-container
         *ngIf="bodyTemplate"
@@ -50,7 +50,7 @@
     </ng-container>
   </div>
 
-  <div *ngIf="footerTemplate" class="border-t border-[#edf2f7] px-4 py-3 md:px-5">
+  <div *ngIf="footerTemplate" class="border-t border-[#edf2f7] px-4 py-3 xl:px-5">
     <ng-container [ngTemplateOutlet]="footerTemplate"></ng-container>
   </div>
 </div>

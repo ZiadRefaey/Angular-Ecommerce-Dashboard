@@ -1,9 +1,9 @@
 @if (currentUrl.includes('login')) {
   <router-outlet></router-outlet>
 } @else {
-  <app-side-bar></app-side-bar>
-  <app-header></app-header>
-  <main>
+  <app-side-bar [isOpen]="isSidebarOpen" (closed)="closeSidebar()"></app-side-bar>
+  <app-header (sidebarToggle)="toggleSidebar()"></app-header>
+  <main class="min-w-0 overflow-auto">
     <router-outlet></router-outlet>
   </main>
 }

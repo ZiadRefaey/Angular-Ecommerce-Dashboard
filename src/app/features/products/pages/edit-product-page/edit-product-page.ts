@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { ProductsService } from '../../../../core/services/products.service';
 import {
   AbstractControl,
   FormArray,
@@ -71,7 +73,9 @@ type ProductForm = FormGroup<{
   templateUrl: './edit-product-page.html',
   styleUrl: './edit-product-page.css',
 })
-export class EditProductPage {
+export class EditProductPage implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly productsService = inject(ProductsService);
   productForm: ProductForm;
   saveAttempted = false;
 
@@ -89,6 +93,23 @@ export class EditProductPage {
 
   confirmDeleteOpen = false;
   pendingDeleteImageId: string | null = null;
+
+  ngOnInit(): void {
+    const productId = this.route.snapshot.paramMap.get('id');
+
+    if (!productId) {
+      return;
+    }
+
+    this.productsService.getProductById(productId).subscribe({
+      next: (product) => {
+        console.log(product);
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
+  }
 
   constructor(private fb: FormBuilder) {
     this.productForm = this.fb.group({
@@ -268,7 +289,7 @@ export class EditProductPage {
   }
 
   requestDeleteMedia(imageId: string): void {
-    if (this.variationsArray.length === 1) {
+    if ((this.activeVariation?.media.length ?? 0) <= 1) {
       return;
     }
 
@@ -399,5 +420,9 @@ export class EditProductPage {
     );
   }
 }
+
+
+
+
 
 
