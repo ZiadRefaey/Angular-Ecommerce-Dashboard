@@ -21,12 +21,12 @@ export class CategoriesPage implements OnInit {
 
   columns: DataTableColumn[] = [
     { field: 'name', header: 'CATEGORY NAME', width: '46%' },
-    { field: 'productsCount', header: 'PRODUCTS', width: '18%' },
+    { field: 'productsCount', header: 'PRODUCTS', width: '20%' },
     { field: 'createdAt', header: 'CREATED AT', width: '20%' },
     {
       field: 'actions',
       header: 'ACTIONS',
-      width: '16%',
+      width: '14%',
       headerAlign: 'center',
       bodyAlign: 'center',
     },
@@ -44,6 +44,10 @@ export class CategoriesPage implements OnInit {
   currentPage = 1;
   isLoading = true;
   errorMessage = '';
+  confirmDeleteOpen = false;
+  pendingDeleteCategory: CategoryListItem | null = null;
+  deleteErrorMessage = '';
+  isDeleting = false;
 
   allCategories: CategoryListItem[] = [];
 
@@ -188,6 +192,53 @@ export class CategoriesPage implements OnInit {
   refreshCategories(): void {
     this.resetPagination();
     this.loadCategories();
+  }
+
+  requestDeleteCategory(category: CategoryListItem): void {
+    this.pendingDeleteCategory = category;
+    this.confirmDeleteOpen = true;
+    this.deleteErrorMessage = '';
+  }
+
+  closeDeleteModal(): void {
+    if (this.isDeleting) {
+      return;
+    }
+
+    this.confirmDeleteOpen = false;
+    this.pendingDeleteCategory = null;
+    this.deleteErrorMessage = '';
+  }
+
+  confirmDeleteCategory(): void {
+    if (!this.pendingDeleteCategory || this.isDeleting) {
+      return;
+    }
+
+    this.isDeleting = true;
+    this.deleteErrorMessage = '';
+
+    this.categoriesService.deleteCategoryById(this.pendingDeleteCategory.id).subscribe({
+      next: () => {
+        this.allCategories = this.allCategories.filter(
+          (category) => category.id !== this.pendingDeleteCategory?.id,
+        );
+
+        if (this.currentPage > this.totalPages) {
+          this.currentPage = this.totalPages;
+        }
+
+        this.isDeleting = false;
+        this.closeDeleteModal();
+      },
+      error: (error) => {
+        this.isDeleting = false;
+        this.deleteErrorMessage =
+          error?.error?.error ||
+          error?.error?.message ||
+          'Unable to delete this category right now. Please try again.';
+      },
+    });
   }
 
   private loadCategories(): void {

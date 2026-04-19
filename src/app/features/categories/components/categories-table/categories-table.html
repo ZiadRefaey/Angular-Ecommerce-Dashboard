@@ -1,5 +1,7 @@
 <div class="bg-white">
-  <div class="flex flex-col gap-3 border-b border-[#edf2f7] px-4 py-3 md:flex-row md:items-center md:justify-between md:px-5">
+  <div
+    class="flex flex-col gap-3 border-b border-[#edf2f7] px-4 py-3 md:flex-row md:items-center md:justify-between md:px-5"
+  >
     <p class="text-[14px] font-medium text-[#667085]">Category Inventory</p>
     <p class="text-[14px] text-[#667085]">
       Showing {{ showingFrom }}-{{ showingTo }} of {{ totalItems }} categories
@@ -22,6 +24,15 @@
           <p class="font-semibold text-[#101828]">
             {{ category.name }}
           </p>
+
+          <button
+            type="button"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[#98a2b3] transition hover:bg-[#fef3f2] hover:text-[#f04438] cursor-pointer"
+            aria-label="Delete category"
+            (click)="deleteCategory.emit(category)"
+          >
+            <i class="pi pi-trash text-[13px]"></i>
+          </button>
         </div>
 
         <div class="mt-2 text-[13px] text-[#667085]">
@@ -32,11 +43,6 @@
           <span class="text-[12px] text-[#98a2b3]">
             {{ category.createdAt | categoryDate }}
           </span>
-
-          <div class="flex items-center justify-center gap-3">
-            <i class="pi pi-eye text-[#667085]"></i>
-            <i class="pi pi-ellipsis-h text-[#667085]"></i>
-          </div>
         </div>
       </div>
     } @else {
@@ -57,9 +63,15 @@
         </td>
 
         <td class="table-body-cell">
-          <div class="flex items-center justify-center gap-4">
-            <i class="pi pi-eye text-[#667085]"></i>
-            <i class="pi pi-ellipsis-h text-[#667085]"></i>
+          <div class="flex items-center justify-center">
+            <button
+              type="button"
+              class="inline-flex h-8 w-8 items-center justify-center rounded-lg transition text-[#98a2b3] hover:bg-[#fef3f2] hover:text-[#f04438]"
+              aria-label="Delete category"
+              (click)="deleteCategory.emit(category)"
+            >
+              <i class="pi pi-trash text-[13px]"></i>
+            </button>
           </div>
         </td>
       </tr>

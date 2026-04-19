@@ -21,11 +21,11 @@ export class DataTable<T = any> {
   getHeaderAlignClass(align?: string): string {
     switch (align) {
       case 'center':
-        return 'text-center';
+        return '!text-center';
       case 'right':
-        return 'text-right';
+        return '!text-right';
       default:
-        return 'text-left';
+        return '!text-left';
     }
   }
 

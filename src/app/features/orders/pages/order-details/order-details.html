@@ -1,44 +1,105 @@
-<div class="space-y-6 p-6 bg-white">
-  <div
-    class="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between"
-  >
-    <div class="space-y-2">
-      <div class="flex items-center gap-3">
-        <h1 class="text-2xl font-bold text-slate-900">Order {{ order.id }}</h1>
+<div class="space-y-6 bg-white p-6">
+  @if (isLoading) {
+    <div class="flex min-h-[50vh] items-center justify-center">
+      <app-loading-spinner message="Loading order..."></app-loading-spinner>
+    </div>
+  } @else if (errorMessage) {
+    <div class="rounded-2xl border border-[#fde2e1] bg-white px-5 py-10 text-center shadow-sm">
+      <p class="text-[14px] font-medium text-[#f04438]">{{ errorMessage }}</p>
+    </div>
+  } @else {
+    <div
+      class="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between"
+    >
+      <div class="space-y-2">
+        <div class="flex items-center gap-3">
+          <h1 class="text-2xl font-bold text-slate-900">Order {{ order.id }}</h1>
 
-        <app-status-badge [variant]="order.status"></app-status-badge>
+          <app-status-badge
+            [variant]="statusBadgeVariant"
+            [label]="order.shippingStatus"
+          ></app-status-badge>
+        </div>
+
+        <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500">
+          <p>Placed on {{ order.date }}</p>
+          <p>Payment: {{ order.paymentStatus }}</p>
+          <p>Method: {{ order.paymentMethod }}</p>
+        </div>
       </div>
 
-      <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500">
-        <p>Placed on {{ order.date }}</p>
-        <p>Payment: {{ order.paymentStatus }}</p>
-        <p>Method: {{ order.paymentMethod }}</p>
+      <div class="flex flex-wrap gap-3">
+        <button
+          type="button"
+          class="inline-flex min-w-32 items-center justify-center rounded-xl border border-blue-600 bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+          [disabled]="isSaving"
+          (click)="saveOrder()"
+        >
+          @if (isSaving) {
+            <i class="pi pi-spin pi-spinner text-base"></i>
+          } @else {
+            <span class="inline-flex items-center gap-2">
+              <i class="pi pi-save"></i>
+              <span>Save Order</span>
+            </span>
+          }
+        </button>
       </div>
     </div>
 
-    <div class="flex flex-wrap gap-3">
-      <app-button label="Email Invoice" variant="outline" icon="pi pi-envelope"></app-button>
+    @if (saveErrorMessage) {
+      <div class="rounded-2xl border border-[#fde2e1] bg-[#fff6f5] px-5 py-4 shadow-sm">
+        <p class="text-sm font-medium text-[#f04438]">{{ saveErrorMessage }}</p>
+      </div>
+    }
 
-      <app-button label="Print Invoice" variant="outline" icon="pi pi-print"></app-button>
-    </div>
-  </div>
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-12">
+      <div class="space-y-6 xl:col-span-8">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <app-order-details-customer-card [customer]="customer"></app-order-details-customer-card>
 
-  <div class="grid grid-cols-1 gap-6 xl:grid-cols-12">
-    <div class="space-y-6 xl:col-span-8">
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <app-order-details-customer-card [customer]="customer"></app-order-details-customer-card>
+          <app-order-details-shipping-card [address]="address"></app-order-details-shipping-card>
+        </div>
 
-        <app-order-details-shipping-card [address]="address"></app-order-details-shipping-card>
+        <app-order-items [items]="orderItems"></app-order-items>
+
+        <app-order-details-workflow
+          [status]="order.rawStatus"
+          (statusChange)="onStatusChange($event)"
+        ></app-order-details-workflow>
       </div>
 
-      <app-order-items [items]="orderItems"></app-order-items>
-
-      <app-order-details-workflow [status]="order.status"></app-order-details-workflow>
+      <div class="xl:col-span-4 xl:sticky xl:top-6">
+        <app-order-details-summary-card [summary]="summary"></app-order-details-summary-card>
+      </div>
     </div>
-
-    <div class="flex flex-col gap-6 xl:col-span-4">
-      <app-order-details-summary-card [summary]="summary"></app-order-details-summary-card>
-      <app-order-details-notes [notes]="notes"></app-order-details-notes>
-    </div>
-  </div>
+  }
 </div>
+
+<app-modal
+  [isOpen]="isCancelConfirmOpen"
+  title="Cancel Order"
+  widthClass="max-w-md"
+  (closed)="closeCancelConfirm()"
+>
+  <div class="space-y-5">
+    <p class="text-sm leading-6 text-slate-600">
+      This will mark the order as cancelled. Are you sure you want to continue?
+    </p>
+
+    <div class="flex items-center justify-end gap-3">
+      <app-button
+        label="Keep Order"
+        variant="outline"
+        [disabled]="isSaving"
+        (click)="closeCancelConfirm()"
+      ></app-button>
+      <app-button
+        label="Confirm Cancellation"
+        variant="danger"
+        [disabled]="isSaving"
+        (click)="confirmCancelOrder()"
+      ></app-button>
+    </div>
+  </div>
+</app-modal>

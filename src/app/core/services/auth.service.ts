@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { env } from '../../../enviroment/.env';
 import { API_ENDPOINTS } from '../Constants/api-endpoints';
 
-interface CurrentUser {
+export interface CurrentUser {
   _id: string;
   role: string;
   fullName: string;
@@ -19,12 +19,12 @@ interface CurrentUser {
   __v: number;
 }
 
-interface CurrentUserResponse {
+export interface CurrentUserResponse {
   message: string;
   data: CurrentUser;
 }
 
-interface AppUser {
+export interface AppUser {
   _id: string;
   role: string;
   fullName: string;
@@ -38,9 +38,14 @@ interface AppUser {
   __v: number;
 }
 
-interface AllUsersResponse {
+export interface AllUsersResponse {
   message: string;
   data: AppUser[];
+}
+
+export interface UserByIdResponse {
+  message: string;
+  data: AppUser;
 }
 
 @Injectable({
@@ -51,6 +56,7 @@ export class AuthService {
   private readonly authApiUrl = `${env.apiBaseUrl}/api${API_ENDPOINTS.auth.login}`;
   private readonly currentUserApiUrl = `${env.apiBaseUrl}/api${API_ENDPOINTS.auth.getCurrentUser}`;
   private readonly allUsersApiUrl = `${env.apiBaseUrl}/api${API_ENDPOINTS.auth.getAllUsers}`;
+  private readonly userByIdApiUrl = `${env.apiBaseUrl}/api${API_ENDPOINTS.auth.getUserById}`;
   private http = inject(HttpClient);
   router = inject(Router);
   getToken() {
@@ -73,6 +79,9 @@ export class AuthService {
   }
   getAllUsers() {
     return this.http.get<AllUsersResponse>(this.allUsersApiUrl);
+  }
+  getUserById(userId: string) {
+    return this.http.get<UserByIdResponse>(`${this.userByIdApiUrl}/${userId}`);
   }
   logout(): void {
     localStorage.removeItem(this.accessToken);

@@ -8,7 +8,7 @@ import { Component, Input } from '@angular/core';
 })
 export class Button {
   @Input() label = '';
-  @Input() variant: 'primary' | 'outline' | 'danger' = 'primary';
+  @Input() variant: 'primary' | 'outline' | 'danger' | 'danger-outline' = 'primary';
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() disabled = false;
   @Input() icon = '';

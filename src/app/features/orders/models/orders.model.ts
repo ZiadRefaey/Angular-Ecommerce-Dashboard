@@ -3,6 +3,7 @@ import { StatusBadgeVariant } from '../../../shared/components/status-badge/stat
 export type OrderStatus = 'Delivered' | 'Confirmed' | 'Pending' | 'Shipped' | 'Cancelled';
 
 export type PaymentStatus = 'Paid' | 'Unpaid';
+export type UpdateOrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
 export interface OrderUserResponse {
   _id: string;
@@ -44,6 +45,11 @@ export interface OrdersResponse {
   data: OrderResponseItem[];
 }
 
+export interface OrderByIdResponse {
+  message: string;
+  data: OrderResponseItem;
+}
+
 export interface Order {
   id: string;
   orderId: string;
@@ -66,6 +72,8 @@ export interface OrderStatsCard {
 export interface IOrderDetails {
   id: string;
   status: StatusBadgeVariant;
+  rawStatus: UpdateOrderStatus;
+  shippingStatus: string;
   date: string;
   paymentStatus: string;
   paymentMethod: string;
@@ -73,6 +81,7 @@ export interface IOrderDetails {
 export interface IOrderItem {
   id: number;
   name: string;
+  image: string;
   variant: string;
   quantity: number;
   unitPrice: number;

@@ -8,7 +8,6 @@ import { OrderDetails } from './pages/order-details/order-details';
 import { OrderDetailsCustomerCard } from './components/order-details-customer-card/order-details-customer-card';
 import { OrderDetailsShippingCard } from './components/order-details-shipping-card/order-details-shipping-card';
 import { OrderDetailsSummaryCard } from './components/order-details-summary-card/order-details-summary-card';
-import { OrderDetailsNotes } from './components/order-details-notes/order-details-notes';
 import { OrderDetailsWorkflow } from './components/order-details-workflow/order-details-workflow';
 import { OrderItems } from './components/order-items/order-items';
 import { FormsModule } from '@angular/forms';
@@ -30,7 +29,6 @@ import { OrdersPagination } from './components/orders-pagination/orders-paginati
     OrderDetailsCustomerCard,
     OrderDetailsShippingCard,
     OrderDetailsSummaryCard,
-    OrderDetailsNotes,
     OrderDetailsWorkflow,
     OrderItems,
   ],

@@ -6,8 +6,9 @@ import { StatsCards } from './components/stats-cards/stats-cards';
 import { DashboardOverview } from './pages/dashboard-overview/dashboard-overview';
 import { DashboardRoutingModule } from './dashboard-routing-module';
 import { TableModule } from 'primeng/table';
+import { SharedModule } from '../../shared/shared-module';
 @NgModule({
   declarations: [RecentOrdersTable, StatsCards, DashboardOverview],
-  imports: [CommonModule, DashboardRoutingModule, TableModule],
+  imports: [CommonModule, DashboardRoutingModule, TableModule, SharedModule],
 })
 export class DashboardModule {}

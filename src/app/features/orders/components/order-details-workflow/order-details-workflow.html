@@ -3,27 +3,36 @@
 
   <div class="flex flex-wrap gap-3">
     <app-button
-      label="Confirm"
-      [variant]="status === 'Pending' ? 'primary' : 'outline'"
+      label="Pending"
+      [variant]="getVariant('pending')"
+      (click)="setSelectedStatus('pending')"
     ></app-button>
 
     <app-button
-      label="Process"
-      [variant]="status === 'Confirmed' ? 'primary' : 'outline'"
+      label="Processing"
+      [variant]="getVariant('processing')"
+      (click)="setSelectedStatus('processing')"
     ></app-button>
 
     <app-button
       label="Ship Order"
       icon="pi pi-truck"
-      [variant]="status === 'Processing' ? 'primary' : 'outline'"
+      [variant]="getVariant('shipped')"
+      (click)="setSelectedStatus('shipped')"
     ></app-button>
 
     <app-button
-      label="Deliver"
+      label="Delivered"
       icon="pi pi-check-circle"
-      [variant]="status === 'Shipped' ? 'primary' : 'outline'"
+      [variant]="getVariant('delivered')"
+      (click)="setSelectedStatus('delivered')"
     ></app-button>
 
-    <app-button label="Cancel Order" icon="pi pi-times" variant="danger"></app-button>
+    <app-button
+      label="Cancel Order"
+      icon="pi pi-times"
+      [variant]="getVariant('cancelled')"
+      (click)="setSelectedStatus('cancelled')"
+    ></app-button>
   </div>
 </section>

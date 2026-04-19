@@ -9,9 +9,17 @@
       </p>
     </header>
 
-    <app-stats-cards [stats]="stats"></app-stats-cards>
-    <div class="mt-7">
-      <app-recent-orders-table [orders]="recentOrders"></app-recent-orders-table>
-    </div>
+    @if (isLoading) {
+      <app-loading-spinner message="Loading dashboard..."></app-loading-spinner>
+    } @else if (errorMessage) {
+      <div class="rounded-[14px] border border-[#fde2e1] bg-white px-5 py-10 text-center shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+        <p class="text-[14px] font-medium text-[#f04438]">{{ errorMessage }}</p>
+      </div>
+    } @else {
+      <app-stats-cards [stats]="stats"></app-stats-cards>
+      <div class="mt-7">
+        <app-recent-orders-table [orders]="recentOrders"></app-recent-orders-table>
+      </div>
+    }
   </div>
 </section>

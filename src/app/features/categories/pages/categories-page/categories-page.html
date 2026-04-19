@@ -31,6 +31,7 @@
           [showingFrom]="showingFrom"
           [showingTo]="showingTo"
           [totalItems]="filteredAndSortedCategories.length"
+          (deleteCategory)="requestDeleteCategory($event)"
         ></app-categories-table>
 
         <app-categories-pagination
@@ -49,4 +50,50 @@
     (created)="refreshCategories()"
     (closed)="closeCreateCategoryModal()"
   ></app-create-category>
+
+  <app-modal
+    [isOpen]="confirmDeleteOpen"
+    title="Delete Category"
+    [widthClass]="'max-w-[420px]'"
+    (closed)="closeDeleteModal()"
+  >
+    <div class="space-y-5">
+      <p class="text-[14px] leading-6 text-[#475467]">
+        Are you sure you want to delete
+        <span class="font-semibold text-[#101828]">{{ pendingDeleteCategory?.name }}</span
+        >?
+      </p>
+
+      @if (deleteErrorMessage) {
+        <p class="text-[13px] font-medium text-[#f04438]">{{ deleteErrorMessage }}</p>
+      }
+
+      <div class="flex items-center justify-end gap-3">
+        <button
+          type="button"
+          class="inline-flex h-10 items-center rounded-lg border border-[#d0d5dd] bg-white px-4 text-[14px] font-semibold text-[#475467]"
+          [disabled]="isDeleting"
+          [class.pointer-events-none]="isDeleting"
+          [class.opacity-70]="isDeleting"
+          (click)="closeDeleteModal()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="inline-flex h-10 items-center gap-2 rounded-lg bg-[#f04438] px-4 text-[14px] font-semibold text-white"
+          [disabled]="isDeleting"
+          [class.pointer-events-none]="isDeleting"
+          [class.opacity-70]="isDeleting"
+          (click)="confirmDeleteCategory()"
+        >
+          @if (isDeleting) {
+            <i class="pi pi-spinner pi-spin text-[14px]"></i>
+          }
+          <span>{{ isDeleting ? 'Deleting...' : 'Delete' }}</span>
+        </button>
+      </div>
+    </div>
+  </app-modal>
 </section>

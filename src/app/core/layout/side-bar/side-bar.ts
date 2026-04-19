@@ -19,6 +19,8 @@ export class SideBar {
   @Output() closed = new EventEmitter<void>();
   currentUrl = '';
   ngOnInit() {
+    this.currentUrl = this.router.url;
+
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {

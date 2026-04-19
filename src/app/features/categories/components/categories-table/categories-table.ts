@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CategoryListItem } from '../../models/categories.model';
 import { DataTableColumn } from '../../../../shared/components/models/data-table.model';
 
@@ -14,4 +14,5 @@ export class CategoriesTable {
   @Input() showingFrom = 0;
   @Input() showingTo = 0;
   @Input() totalItems = 0;
+  @Output() deleteCategory = new EventEmitter<CategoryListItem>();
 }

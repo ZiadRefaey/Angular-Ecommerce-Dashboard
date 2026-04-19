@@ -6,6 +6,7 @@ import {
   Category,
   CategoriesResponse,
   CreateCategoryPayload,
+  DeleteCategoryResponse,
 } from '../../features/categories/models/categories.model';
 import { API_ENDPOINTS } from '../Constants/api-endpoints';
 
@@ -32,6 +33,12 @@ export class CategoriesService {
   getCategoryById(categoryId: string): Observable<CategoriesResponse> {
     return this.http.get<CategoriesResponse>(
       `${this.categoriesUrl}${API_ENDPOINTS.categories.getById}/${categoryId}`,
+    );
+  }
+
+  deleteCategoryById(categoryId: string): Observable<DeleteCategoryResponse> {
+    return this.http.delete<DeleteCategoryResponse>(
+      `${this.categoriesUrl}${API_ENDPOINTS.categories.deleteById}/${categoryId}`,
     );
   }
 

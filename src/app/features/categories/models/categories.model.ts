@@ -13,6 +13,12 @@ export interface CreateCategoryPayload {
   name: string;
 }
 
+export interface DeleteCategoryResponse {
+  message: string;
+  data?: Record<string, never>;
+  error?: string;
+}
+
 export interface CategoryListItem {
   id: string;
   name: string;

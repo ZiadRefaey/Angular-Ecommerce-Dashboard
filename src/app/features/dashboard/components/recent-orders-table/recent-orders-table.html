@@ -30,13 +30,15 @@
       <ng-template pTemplate="body" let-order>
         <tr>
           <td class="table-body-cell font-semibold text-slate-800">
-            {{ order.orderId }}
+            <a [routerLink]="['/orders', order.id]" class="text-blue-700 hover:underline">
+              {{ order.orderId }}
+            </a>
           </td>
           <td class="table-body-cell text-slate-600">
             {{ order.customerName }}
           </td>
           <td class="table-body-cell font-semibold text-slate-800">
-            {{ order.totalPrice | currency: 'USD' : 'symbol' : '1.0-0' }}
+            {{ order.totalPrice | currency: 'EGP' : 'symbol' : '1.0-0' }}
           </td>
           <td class="table-body-cell">
             <span
@@ -54,7 +56,7 @@
     </p-table>
 
     <div class="flex items-center justify-between border-t border-[#edf1f6] px-4 py-4 sm:px-5">
-      <p class="text-[12px] text-slate-500">Showing 5 of 45,210 orders</p>
+      <p class="text-[12px] text-slate-500">Showing {{ orders.length }} latest orders</p>
 
       <div class="flex items-center gap-3 text-slate-400">
         <button type="button" class="text-lg leading-none">&lsaquo;</button>
@@ -69,7 +71,9 @@
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-[14px] font-semibold text-slate-800">
-            {{ order.orderId }}
+            <a [routerLink]="['/orders', order.id]" class="text-blue-700 hover:underline">
+              {{ order.orderId }}
+            </a>
           </p>
           <p class="mt-1 text-[13px] text-slate-500">
             {{ order.customerName }}
@@ -86,7 +90,7 @@
 
       <div class="mt-3 flex items-center justify-between">
         <p class="text-[14px] font-semibold text-slate-900">
-          {{ order.totalPrice | currency: 'USD' : 'symbol' : '1.0-0' }}
+          {{ order.totalPrice | currency: 'EGP' : 'symbol' : '1.0-0' }}
         </p>
         <p class="text-[12px] text-slate-500">
           {{ order.date }}
@@ -95,7 +99,7 @@
     </div>
 
     <div class="flex items-center justify-between px-4 py-4">
-      <p class="text-[12px] text-slate-500">Showing 5 of 45,210 orders</p>
+      <p class="text-[12px] text-slate-500">Showing {{ orders.length }} latest orders</p>
 
       <div class="flex items-center gap-3 text-slate-400">
         <button type="button" class="text-lg leading-none">&lsaquo;</button>

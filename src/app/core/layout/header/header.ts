@@ -116,6 +116,16 @@ export class Header implements OnInit, OnDestroy {
 
   onSearchInput(value: string): void {
     this.searchTerm = value;
+
+    const normalizedValue = value.trim();
+    this.isDropdownOpen = !!normalizedValue;
+
+    if (!normalizedValue) {
+      this.searchResults = [];
+      this.isLoading = false;
+      this.errorMessage = '';
+    }
+
     this.searchInput$.next(value);
   }
 
@@ -144,6 +154,17 @@ export class Header implements OnInit, OnDestroy {
 
   get showEmptyState(): boolean {
     return !this.isLoading && !this.errorMessage && !!this.searchTerm.trim() && !this.searchResults.length;
+  }
+
+  getProductSearchImage(product: Product): string {
+    const defaultVariation = product.variations.find((variation) => variation.isDefault);
+
+    return (
+      defaultVariation?.defaultImage ||
+      defaultVariation?.defaultImg ||
+      product.image ||
+      '/product-media.jpg'
+    );
   }
 
   @HostListener('document:click', ['$event'])

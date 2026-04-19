@@ -23,10 +23,16 @@ export class LoginForm {
   loginFail: null | boolean = null;
   loginSuccess = false;
   serverErrMessage = '';
+  private readonly passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{6,}$/;
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
       email: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
-      password: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(6)]),
+      password: this.fb.nonNullable.control('', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(this.passwordPattern),
+      ]),
     });
   }
 
@@ -36,6 +42,37 @@ export class LoginForm {
 
   get passwordControl(): FormControl<string> {
     return this.form.controls.password;
+  }
+
+  get passwordErrorMessage(): string {
+    const passwordControl = this.passwordControl;
+    const passwordValue = passwordControl.value ?? '';
+
+    if (!(passwordControl.dirty || passwordControl.touched) || !passwordControl.errors) {
+      return '';
+    }
+
+    if (passwordControl.errors['required']) {
+      return 'Password is required.';
+    }
+
+    if (passwordControl.errors['minlength']) {
+      return 'Password must be at least 6 characters long.';
+    }
+
+    if (!/[A-Z]/.test(passwordValue)) {
+      return 'Password must include at least one uppercase letter.';
+    }
+
+    if (!/[a-z]/.test(passwordValue)) {
+      return 'Password must include at least one lowercase letter.';
+    }
+
+    if (!/[^A-Za-z0-9]/.test(passwordValue)) {
+      return 'Password must include at least one special character.';
+    }
+
+    return 'Please enter a valid password.';
   }
 
   togglePassword(): void {
