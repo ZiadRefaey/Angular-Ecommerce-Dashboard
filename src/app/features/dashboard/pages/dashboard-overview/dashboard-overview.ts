@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { DashboardStat } from '../../models/dashboard-stat.model';
 import { Order } from '../../models/order.model';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AppUser, AuthService } from '../../../../core/services/auth.service';
 import { OrdersService } from '../../../../core/services/orders.service';
 import { ProductsService } from '../../../../core/services/products.service';
 import { CategoriesService } from '../../../../core/services/categories.service';
@@ -43,6 +43,7 @@ export class DashboardOverview implements OnInit {
         const activeProducts = productsResponse.data.filter((product) => product.isDeleted === false);
         const uniqueCategoriesCount = this.getUniqueCategoriesCount(categoriesResponse.data);
         const totalRevenue = ordersResponse.data.reduce((sum, order) => sum + order.totalPrice, 0);
+        const usersById = this.buildUsersById(usersResponse.data);
 
         this.stats = [
           {
@@ -88,7 +89,7 @@ export class DashboardOverview implements OnInit {
               new Date(secondOrder.createdAt).getTime() - new Date(firstOrder.createdAt).getTime(),
           )
           .slice(0, 5)
-          .map((order) => this.mapRecentOrder(order));
+          .map((order) => this.mapRecentOrder(order, usersById));
 
         this.isLoading = false;
       },
@@ -99,14 +100,21 @@ export class DashboardOverview implements OnInit {
     });
   }
 
-  private mapRecentOrder(order: OrderResponseItem): Order {
-    const customerName = typeof order.user === 'string' ? 'Unknown User' : order.user.name;
+  private mapRecentOrder(order: OrderResponseItem, usersById: Record<string, AppUser>): Order {
+    const orderUserId = typeof order.user === 'string' ? order.user : order.user._id;
+    const matchedUser = usersById[orderUserId];
+    const fallbackName = typeof order.user === 'string' ? 'Unknown User' : order.user.name;
+    const fallbackEmail = typeof order.user === 'string' ? '-' : order.user.email;
+    const customerName = matchedUser?.fullName || fallbackName;
+    const customerEmail = matchedUser?.email || fallbackEmail;
 
     return {
       id: order._id,
       orderId: order._id.slice(0, 5),
       fullOrderId: order._id,
       customerName,
+      customerEmail,
+      customerInitial: this.getCustomerInitial(customerName),
       totalPrice: order.totalPrice,
       status: this.mapOrderStatus(order.status),
       date: new Intl.DateTimeFormat('en-US', {
@@ -115,6 +123,17 @@ export class DashboardOverview implements OnInit {
         year: 'numeric',
       }).format(new Date(order.createdAt)),
     };
+  }
+
+  private buildUsersById(users: AppUser[]): Record<string, AppUser> {
+    return users.reduce<Record<string, AppUser>>((accumulator, user) => {
+      accumulator[user._id] = user;
+      return accumulator;
+    }, {});
+  }
+
+  private getCustomerInitial(customerName: string): string {
+    return customerName.trim().charAt(0).toUpperCase() || '?';
   }
 
   private mapOrderStatus(status: string): Order['status'] {

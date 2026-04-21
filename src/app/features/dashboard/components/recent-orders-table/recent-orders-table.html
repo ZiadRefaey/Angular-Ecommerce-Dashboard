@@ -20,7 +20,7 @@
       <ng-template pTemplate="header">
         <tr>
           <th class="table-head-cell text-left">ORDER ID</th>
-          <th class="table-head-cell text-left">CUSTOMER NAME</th>
+          <th class="table-head-cell text-left">CUSTOMER</th>
           <th class="table-head-cell text-left">TOTAL PRICE</th>
           <th class="table-head-cell text-left">STATUS</th>
           <th class="table-head-cell text-right">DATE</th>
@@ -34,8 +34,23 @@
               {{ order.orderId }}
             </a>
           </td>
-          <td class="table-body-cell text-slate-600">
-            {{ order.customerName }}
+          <td class="table-body-cell">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#edf4ff] text-[13px] font-semibold text-[#2f6bff]"
+              >
+                {{ order.customerInitial }}
+              </div>
+
+              <div class="min-w-0">
+                <p class="truncate text-[14px] font-semibold text-slate-800">
+                  {{ order.customerName }}
+                </p>
+                <p class="truncate text-[12px] text-slate-500">
+                  {{ order.customerEmail }}
+                </p>
+              </div>
+            </div>
           </td>
           <td class="table-body-cell font-semibold text-slate-800">
             {{ order.totalPrice | currency: 'EGP' : 'symbol' : '1.0-0' }}
@@ -75,9 +90,22 @@
               {{ order.orderId }}
             </a>
           </p>
-          <p class="mt-1 text-[13px] text-slate-500">
-            {{ order.customerName }}
-          </p>
+          <div class="mt-2 flex items-center gap-2">
+            <div
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#edf4ff] text-[12px] font-semibold text-[#2f6bff]"
+            >
+              {{ order.customerInitial }}
+            </div>
+
+            <div class="min-w-0">
+              <p class="truncate text-[13px] font-semibold text-slate-700">
+                {{ order.customerName }}
+              </p>
+              <p class="truncate text-[12px] text-slate-500">
+                {{ order.customerEmail }}
+              </p>
+            </div>
+          </div>
         </div>
 
         <span
