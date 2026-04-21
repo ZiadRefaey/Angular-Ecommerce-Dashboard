@@ -3,6 +3,13 @@
 @import 'tailwindcss';
 @import 'primeicons/primeicons.css';
 @tailwind utilities;
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
 @layer components {
   .table-head-cell {
     @apply px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.03em] text-slate-500;
@@ -67,3 +74,4 @@
   background: #eef4ff !important;
   color: #175cd3 !important;
 }
+

@@ -269,7 +269,7 @@
       <div class="flex items-center justify-end gap-3">
         <button
           type="button"
-          class="inline-flex h-10 items-center rounded-lg border border-[#d0d5dd] bg-white px-4 text-[14px] font-semibold text-[#475467] cursor-pointer"
+          class="inline-flex h-10 cursor-pointer items-center rounded-lg border border-[#d0d5dd] bg-white px-4 text-[14px] font-semibold text-[#475467] transition hover:bg-[#f8fafc]"
           (click)="closeDeleteModal()"
         >
           Cancel
@@ -277,7 +277,7 @@
 
         <button
           type="button"
-          class="inline-flex h-10 items-center gap-2 rounded-lg bg-[#f04438] px-4 text-[14px] font-semibold text-white"
+          class="inline-flex h-10 items-center gap-2 rounded-lg bg-[#f04438] px-4 text-[14px] font-semibold text-white transition hover:bg-[#d92d20]"
           [disabled]="isDeleting"
           [class.pointer-events-none]="isDeleting"
           [class.opacity-70]="isDeleting"
@@ -292,3 +292,4 @@
     </div>
   </app-modal>
 </section>
+

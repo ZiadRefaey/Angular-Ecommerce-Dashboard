@@ -1,13 +1,17 @@
 <section class="min-h-screen bg-[#f4f7fb] px-4 py-5 sm:px-5 lg:px-6">
   <div class="mx-auto w-full max-w-7xl">
-    <app-categories-page-header (addCategory)="openCreateCategoryModal()"></app-categories-page-header>
+    <app-categories-page-header
+      (addCategory)="openCreateCategoryModal()"
+    ></app-categories-page-header>
 
     <app-categories-stats-cards-section
       class="mt-7"
       [statsCards]="statsCards"
     ></app-categories-stats-cards-section>
 
-    <div class="mt-7 overflow-hidden rounded-[14px] border border-[#dde5ef] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+    <div
+      class="mt-7 overflow-hidden rounded-[14px] border border-[#dde5ef] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+    >
       @if (isLoading) {
         <app-loading-spinner message="Loading categories..."></app-loading-spinner>
       } @else if (errorMessage) {
@@ -71,7 +75,7 @@
       <div class="flex items-center justify-end gap-3">
         <button
           type="button"
-          class="inline-flex h-10 items-center rounded-lg border border-[#d0d5dd] bg-white px-4 text-[14px] font-semibold text-[#475467]"
+          class="inline-flex h-10 items-center rounded-lg border border-[#d0d5dd] bg-white px-4 text-[14px] font-semibold text-[#475467] cursor-pointer hover:bg-slate-50 transition"
           [disabled]="isDeleting"
           [class.pointer-events-none]="isDeleting"
           [class.opacity-70]="isDeleting"
@@ -82,7 +86,7 @@
 
         <button
           type="button"
-          class="inline-flex h-10 items-center gap-2 rounded-lg bg-[#f04438] px-4 text-[14px] font-semibold text-white"
+          class="inline-flex h-10 items-center gap-2 rounded-lg bg-[#f04438] px-4 text-[14px] font-semibold text-white transition hover:bg-[#d92d20]"
           [disabled]="isDeleting"
           [class.pointer-events-none]="isDeleting"
           [class.opacity-70]="isDeleting"
@@ -97,3 +101,4 @@
     </div>
   </app-modal>
 </section>
+
