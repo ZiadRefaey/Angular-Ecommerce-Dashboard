@@ -1,33 +1,81 @@
 # ITI E-commerce Dashboard
 
-An Angular admin dashboard for managing an e-commerce system, with real backend integration for authentication, products, categories, orders, and overview analytics.
+## Demo Sign In
 
-This project is built with Angular NgModules, Tailwind CSS, and PrimeNG, and is structured around feature modules with shared UI building blocks and typed service layers.
+Use the following admin account to sign in:
 
-## Overview
+```text
+ID: admin@admin.com
+Password: Password123!
+```
 
-The dashboard currently includes:
+## About The Project
 
-- Admin-only authentication and route protection
-- Dashboard overview with live stats and latest orders
-- Products list with search, filtering, sorting, pagination, and soft delete
-- Product creation with reactive forms, image uploads, category selection, and reusable color input
-- Product details/edit flow with variations, media management, and backend update support
-- Categories list with live data, derived product counts, search, sorting, pagination, and category creation
-- Orders list with search, filtering, sorting, pagination, and real customer mapping
-- Order details with live order/customer/item data and status update workflow
-- Responsive layout with sidebar drawer, mobile/tablet table adaptations, and shared loading states
+ITI E-commerce Dashboard is an Angular admin dashboard for managing an e-commerce backend. It provides admin-only access to overview analytics, product management, category management, order management, and customer-backed order data.
 
-## Tech Stack
+The app is connected to a live backend and uses a modular Angular structure so each major dashboard area lives in its own feature module.
 
-- Angular 21
-- TypeScript
-- Angular Router
-- Angular Reactive Forms
-- RxJS
-- Tailwind CSS v4
-- PrimeNG
-- PrimeIcons
+## Tools And Technologies
+
+- Angular 21 for the frontend application
+- TypeScript for typed application logic
+- Angular NgModules for module organization
+- Angular Router for page navigation and lazy-loaded feature modules
+- Angular Reactive Forms for login, product, category, and edit flows
+- RxJS for API flow handling and async data composition
+- Tailwind CSS v4 for utility-first styling and responsive layouts
+- PrimeNG and PrimeIcons for selected UI elements and icons
+- HttpClient for backend communication
+- Route guards and interceptors for authenticated admin access
+
+## Main Features
+
+- Admin login with role-based access control
+- Dashboard overview with derived stats and latest orders
+- Products table with API data, search, filtering, sorting, pagination, and soft delete
+- Add Product modal with reactive validation, category selection, color selection, stock input, and image upload previews
+- Product details page with product fetching by id, editable fields, variation cards, media gallery, default image handling, update flow, and delete confirmation
+- Categories table with API data, unique category rendering, product counts, search, sorting, pagination, create modal, and delete confirmation
+- Orders table with API data, user/customer matching, search, filters, sorting, pagination, and route links to order details
+- Order details page with order/user fetching, status selection, update status flow, cancellation confirmation, and loading/error states
+- Responsive dashboard layout with sidebar navigation, hamburger menu, adaptive tables, and mobile-friendly header search behavior
+
+## Application Flow
+
+1. The user signs in from the login page using an email and password.
+2. After login succeeds, the app stores the access token and fetches the current user profile.
+3. The app checks the returned user role.
+4. If the role is `admin`, the user is allowed into the dashboard.
+5. If the role is not `admin`, the token is cleared and the user stays on the login page with an access message.
+6. Protected dashboard routes also use an auth guard, so direct URL access is blocked for unauthenticated or non-admin users.
+7. Once inside the dashboard, feature pages fetch their own backend data through dedicated services.
+8. Tables derive their displayed rows from the fetched data using local search, filtering, sorting, and pagination.
+9. Create, update, and delete actions call the backend through service methods, then refresh or update the UI state.
+
+## Backend Integration
+
+The backend base URL is stored in the environment configuration:
+
+```text
+src/enviroment/.env.ts
+```
+
+API endpoint paths are centralized in:
+
+```text
+src/app/core/Constants/api-endpoints.ts
+```
+
+Main service files include:
+
+```text
+src/app/core/services/auth.service.ts
+src/app/core/services/products.service.ts
+src/app/core/services/categories.service.ts
+src/app/core/services/orders.service.ts
+```
+
+This keeps API logic out of presentation components and makes endpoint changes easier to maintain.
 
 ## Project Structure
 
@@ -50,107 +98,42 @@ src/
       components/
       pipes/
   enviroment/
+public/
 ```
 
-### Important folders
+## Folder Responsibilities
 
-- `src/app/core`
-  App-wide infrastructure such as API endpoints, auth guard, HTTP interceptor, layout, and service layer.
+- `core` contains app-wide infrastructure such as endpoint constants, guards, interceptors, layout components, and API services.
+- `features` contains domain modules for auth, dashboard, products, categories, and orders.
+- `shared` contains reusable UI components such as the modal, data table, loading spinner, status badge, and shared pipes.
+- `public` contains static assets such as the application logo.
 
-- `src/app/features`
-  Domain-focused modules:
-  `auth`, `dashboard`, `products`, `categories`, and `orders`.
+## Routes
 
-- `src/app/shared`
-  Reusable presentation components such as buttons, modal, status badge, data table, loading spinner, and shared pipes.
+```text
+/login
+/dashboard
+/products
+/products/:id
+/categories
+/orders
+/orders/:id
+```
 
-- `src/enviroment/.env.ts`
-  Stores the backend base URL used by the services.
+Dashboard routes are protected and intended for admin users only.
 
-## Routing
+## Data And UI Flow
 
-The app uses lazy-loaded feature modules:
+The app generally follows this pattern:
 
-- `/login`
-- `/dashboard`
-- `/products`
-- `/products/:id`
-- `/categories`
-- `/orders`
-- `/orders/:id`
+1. A page component requests data from a core service.
+2. The service calls the backend using a typed endpoint.
+3. The page stores loading, error, and source-data state.
+4. Derived getters or mapping helpers prepare the data for tables and cards.
+5. Feature/table components receive prepared data as inputs and focus on rendering.
+6. User actions call page handlers, which delegate API work back to services.
 
-Protected routes use the auth guard.
-
-## Authentication And Access Control
-
-This dashboard is intentionally restricted to admin users only.
-
-The flow is:
-
-1. User signs in through the backend login endpoint.
-2. After a successful login, the app fetches the current user profile.
-3. If the returned role is not `admin`, the token is cleared and the user remains on the login page with an access-denied message.
-4. The route guard also checks the current user role before allowing access to protected routes.
-
-This means a valid non-admin account can authenticate with the backend, but it still cannot access the dashboard UI.
-
-## Backend Integration
-
-The app is already connected to a live backend:
-
-`https://e-commerce-a6cz.onrender.com`
-
-API endpoints are centralized in:
-
-- `src/app/core/Constants/api-endpoints.ts`
-
-Main service files:
-
-- `src/app/core/services/auth.service.ts`
-- `src/app/core/services/products.service.ts`
-- `src/app/core/services/categories.service.ts`
-- `src/app/core/services/orders.service.ts`
-
-## Feature Notes
-
-### Dashboard
-
-- Aggregates live stats from users, products, categories, and orders
-- Shows the latest 5 orders
-- Recent orders link directly to `/orders/:id`
-
-### Products
-
-- Real backend products replace all old mock data
-- List page supports search, category filtering, sorting, pagination, and soft delete
-- Product images in the table are resolved from the first default variation image
-- Add Product uses a reactive form and uploads images using `FormData`
-- Edit Product fetches by route id, supports variations/media editing, and patches updates back to the API
-
-### Categories
-
-- Category table is driven by the categories service
-- Product counts are derived from products data
-- Deleted products are excluded from category totals
-- Create Category is a reactive modal with backend submission
-
-### Orders
-
-- Orders list is driven by the orders API and user lookup data
-- Order details fetch both order data and the related user
-- Order status can be updated through the details page
-- Save flow supports a cancellation confirmation modal
-
-## UI Architecture
-
-The app follows a fairly consistent pattern:
-
-- Services fetch raw API data
-- Page components hold search/filter/sort/pagination state
-- Derived getters build filtered and sorted datasets
-- Shared or feature components handle presentation
-
-This keeps table behavior and page state logic mostly out of presentational components.
+This keeps most business logic close to the page layer while keeping reusable components mostly presentational.
 
 ## Running The Project
 
@@ -166,7 +149,7 @@ Start the development server:
 npm start
 ```
 
-Then open:
+Open the app at:
 
 ```text
 http://localhost:4200
@@ -178,28 +161,19 @@ http://localhost:4200
 npm run build
 ```
 
-At the time of writing, Angular compilation succeeds, but the build still fails on the configured bundle budget because the initial bundle is above the current budget threshold.
-
 ## Development Notes
 
-- The project uses Angular built-in control flow in templates where updated
-- Reactive Forms are used for the more complex data-entry flows
-- Shared loading UI is handled through a reusable loading spinner component
-- The app favors soft deletion for products through the `isDeleted` flag
-- Many list/table views use derived client-side filtering, sorting, and pagination
+- The project uses Angular built-in template control flow in updated templates.
+- Reactive Forms are preferred for form-heavy flows.
+- Tailwind predefined utility classes are preferred over arbitrary values when practical.
+- Product deletion is handled as a soft delete using the backend `isDeleted` flag.
+- Product create and update image flows use `FormData` so files can be uploaded to the backend.
+- Categories and orders combine multiple backend datasets where needed to render richer table rows.
 
 ## Branding
 
-The app uses the `logo.svg` asset in the `public/` folder and is branded as:
+The dashboard uses the logo SVG from the `public` folder and is branded as:
 
-`ITI E-commerce`
-
-## Future Improvements
-
-Some natural next steps for this project would be:
-
-- Add test coverage for service and page-level data mapping
-- Improve bundle size and resolve the production budget failure
-- Add toast notifications for create/update/delete flows
-- Add richer order editing if the backend expands beyond status updates
-- Add dedicated backend-driven category or product analytics if needed
+```text
+ITI E-commerce
+```
