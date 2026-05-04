@@ -1,3 +1,3 @@
 export const env = {
-  apiBaseUrl: 'https://e-commerce-a6cz.onrender.com',
+  apiBaseUrl: 'https://e-commerce-beige-iota.vercel.app/',
 } as const;
